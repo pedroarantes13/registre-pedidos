@@ -5,8 +5,9 @@ int main () {
 
     struct menu_restaurante
     {
-        /* data */
+        char nome[100];
+        int tipo;
+        float preço;
+        float tempo_preparo;
     };
-    
-
 }
