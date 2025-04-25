@@ -3,6 +3,7 @@
 #pragma once
 
 struct dados_pedido {
+    int mesa;
     char prato[50];
     int qtd_prato;
     char bebida[50];
@@ -10,4 +11,4 @@ struct dados_pedido {
     float subtotal;
 };
 
-struct dados_pedido registrar_pedido();
+struct dados_pedido registrar_pedido(int mesa, char prato[], int qtd_prato, char bebida[], int qtd_bebida);
