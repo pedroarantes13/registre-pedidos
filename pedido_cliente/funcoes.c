@@ -2,58 +2,80 @@
 #include <string.h>
 #include "funcoes.h"
 
-// Função auxiliar para exibir linha de separação
-
+// Imprime uma linha intermediária (visual)
 void mid_line(){
-    printf("---------------------------\n");
+    printf("-----------------------------------\n");
 }
 
-// Função auxiliar para exibir linha destacada
-
+// Imprime uma linha de topo/rodapé (visual)
 void top_bottom(){
-    printf("===========================\n");
+    printf("===================================\n");
 }
 
-// Registra o pedido, preenchendo a struct com os dados conhecidos
+// Essa função registra um novo pedido E já salva diretamente no arquivo binário
+void registrar_e_salvar(int mesa, int pessoas, char prato[], int qtd_prato, char bebida[], int qtd_bebida){
+    struct dados_pedido info;  // Cria uma nova struct para armazenar os dados do pedido
 
-struct dados_pedido registrar_pedido(int mesa, char prato[], int qtd_prato, char bebida[], int qtd_bebida){
-
-    // Declara a struct 
-
-    struct dados_pedido info;
-
+    // Preenchendo os dados básicos do pedido
     info.mesa = mesa;
+    info.pessoas = pessoas;
 
+    // Copiando os nomes dos itens (strings)
     strcpy(info.prato, prato);
     info.qtd_prato = qtd_prato;
 
     strcpy(info.bebida, bebida);
     info.qtd_bebida = qtd_bebida;
 
-    // Valores fictícios
-
+    // Preços fictícios dos itens
     float valor_prato = 30.0;
     float valor_bebida = 5.0;
 
-    // Cálculo do subtotal a partir da quantidade e dos valores fictícios
+    // Calcula o valor total e depois divide igualmente entre as pessoas
+    float total = (qtd_prato * valor_prato) + (qtd_bebida * valor_bebida);
+    info.subtotal = total / pessoas;  // Armazena quanto cada pessoa vai pagar
 
-    info.subtotal = (info.qtd_prato * valor_prato) + (info.qtd_bebida * valor_bebida);
+    // Abre o arquivo binário em modo append (adicionar no fim)
+    FILE *arquivo = fopen(ARQUIVO_BINARIO, "ab");
+    if (arquivo == NULL){
+        printf("Erro ao abrir o arquivo!\n");
+        return;  // Sai da função em caso de erro
+    }
 
-    return info;
+    // Escreve 1 struct no arquivo
+    fwrite(&info, sizeof(struct dados_pedido), 1, arquivo);
+
+    fclose(arquivo);  // Fecha o arquivo
+    printf("Pedido da mesa %d salvo com sucesso!\n", mesa);
 }
 
-// Exibe um pedido, formatado no terminal
+// Lê os pedidos anteriores do arquivo binário e preenche o vetor 'pedidos'
+// Retorna quantos foram lidos com sucesso
+int carregar_pedidos(struct dados_pedido pedidos[], int max_pedidos){
+    FILE *arquivo = fopen(ARQUIVO_BINARIO, "rb");
 
+    if (arquivo == NULL){
+        printf("Arquivo de pedidos nao encontrado!\n");
+        return 0;  // Nenhum pedido carregado
+    }
+
+    // Lê até max_pedidos registros do arquivo
+    int lidos = fread(pedidos, sizeof(struct dados_pedido), max_pedidos, arquivo);
+    fclose(arquivo);
+    return lidos;  // Retorna o total de pedidos lidos
+}
+
+// Exibe os dados de um pedido na tela, formatado
 void exibir_pedido(struct dados_pedido info){
     printf("Mesa: %d\n", info.mesa);
+    printf("Pessoas na mesa: %d\n", info.pessoas);
     printf("Prato: %s (x%d)\n", info.prato, info.qtd_prato);
     printf("Bebida: %s (x%d)\n", info.bebida, info.qtd_bebida);
-    printf("Subtotal: R$%.2f\n", info.subtotal);
+    printf("Subtotal (por pessoa): R$%.2f\n", info.subtotal);
     mid_line();
 }
 
-// Exibe todos os pedidos e o total a pagar
-
+// Mostra um resumo de todos os pedidos e o total geral
 void exibir_resumo(struct dados_pedido pedidos[], int num_pedidos){
     float total_geral = 0;
 
@@ -61,40 +83,9 @@ void exibir_resumo(struct dados_pedido pedidos[], int num_pedidos){
 
     for (int i=0; i<num_pedidos; i++){
         exibir_pedido(pedidos[i]);
-        total_geral += pedidos[i].subtotal;
+        total_geral += pedidos[i].subtotal * pedidos[i].pessoas;  // Reconstrói o total original
     }
 
     printf("TOTAL GERAL: R$%.2f\n", total_geral);
     top_bottom();
-}
-
-// Salva os pedidos fornecidos no arquivo binário (acrescenta ao final)
-
-void salvar_pedidos(struct dados_pedido pedidos[], int num_pedidos){
-    FILE *arquivo = fopen(ARQUIVO_BINARIO, "ab");
-    
-    if (arquivo == NULL){
-        printf("Erro ao abrir o arquivo!\n");
-        return;
-    }
-
-    fwrite(pedidos, sizeof(struct dados_pedido), num_pedidos, arquivo);
-    fclose(arquivo);
-    printf("Pedidos salvos com sucesso!\n");
-
-}
-
-// Carrega os pedidos do arquivo binário (se existir)
-
-int carregar_pedidos(struct dados_pedido pedidos[], int max_pedidos){
-    FILE *arquivo = fopen(ARQUIVO_BINARIO, "rb");
-
-    if (arquivo == NULL){
-        printf("Arquivo de pedidos nao encontrado!\n");
-        return 0;
-    }
-
-    int lidos = fread(pedidos, sizeof(struct dados_pedido), max_pedidos, arquivo);
-    fclose(arquivo);
-    return lidos;
 }
