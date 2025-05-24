@@ -1,51 +1,45 @@
 #include <stdio.h>
 
-int avaliarsenha(int senha){ //funcao para avaliar a senha, utilizei para deixar o codigo mais limpo
-    int tentativa;
-    do {
-        printf("Digite a senha: ");
-        scanf("%d", &tentativa);
-
-        if(tentativa != senha)
-        printf("Senha incorreta. tente novamente\n");
-    } while(tentativa != senha);
-        
-    return 1;
-}
-
 int main(){
+  
+ int escolha;
 
-int n1, n2;
+    printf("[SEJA BEM VINDO NOVAMENTE!]\n\n");
 
-  printf("Olá, seja bem vindo(a)\n");
-  printf("Voce e:\n1 - Cliente\n2 - Funcionario\nPara a opcao desejada, digite o numero correspondente: ");
-  scanf("%d", &n1);
-    if (n1 == 1){
-        printf("Seja bem vindo cliente!");
-    } else if (n1 == 2){
-            int senha = 321;
-            avaliarsenha(senha); // Nesse momento chamo a funcao para avaliar a senha
-            printf("1 - Visualizar cardapio\n2 - Gerar Relatorio\n");
-            scanf("%d", &n2);
+ while(1){
 
-            if (n2 == 1){
-                printf("'''Arquivo binario'''\n"); // Aqui entrara no arquivo binario do cardapio
+    printf("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
+    printf("| VISUALIZAR CARDAPIO [1]|\n");
+    printf("|........................|\n");
+    printf("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
+    printf("|   GERAR RELATORIO [2]  |\n");
+    printf("|........................|\n");
+    printf("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
+    printf("|   FINALIZAR SECAO [0]  |\n");
+    printf("|........................|\n");
+    
 
-            } else if (n2 == 2){
-                int n3;
-                printf("1 - Gerar relatorio\n2 - Sair\n");
-                scanf("%d", &n3);
+    printf("          [   ]\b\b\b");
+    scanf("%d", &escolha);
 
-                if (n3 == 1){
-                    printf("Gerarando relatorio..."); // Funcao gerar relatorio
 
-              } else {
-                printf("Funcao encerrada"); // Encerra o programa
-              }
-            }
-         } else {
-        printf("Comando invalido!\nTente novamente."); //Caso o numero digitado seja diferente de 1 e 2
+    switch (escolha)
+    {
+    case 1:
+        printf("\n==CARDAPIO=="); //Chamo a funcao do Pedro
+        return 0;
+    case 2:
+        printf("\n==RELATORIO=="); //Chamo a funcao do Daniel    
+        return 0;
+    case 0:
+        printf("\n==SECAO ENCERRADA=="); //Finaliza secao 
+        return 0;   
+    default:
+        printf("\n  [COMANDO INVALIDO!]\n   [TENTE NOVAMENTE]\n"); //Entra em loop ate que se digite um comando valido
     }
+  }
+
+
+    
 return 0;
 }
-
