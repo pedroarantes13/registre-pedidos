@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "funcoes.h"
 
 // Imprime uma linha intermediária (visual)
@@ -15,61 +16,84 @@ void top_bottom() {
     printf("=====================================================\n");
 }
 
+// Sistema de cupons
+
+void inicializar_cupons(struct cupom_desconto cupons[]){
+
+    strcpy(cupons[0].codigo, "paulo");
+    cupons[0].porcentagem = 0.20f;
+
+    strcpy(cupons[1].codigo, "daniel");
+    cupons[1].porcentagem = 0.30f;
+
+    strcpy(cupons[2].codigo, "pedro");
+    cupons[2].porcentagem = 0.40f;
+
+    strcpy(cupons[3].codigo, "lizandro");
+    cupons[3].porcentagem = 0.50f;
+
+    strcpy(cupons[4].codigo, "gean");
+    cupons[4].porcentagem = 0.60f;
+}
+
+int aplicar_cupom(char codigo[], struct cupom_desconto cupons[], float *desconto){
+    for (int i=0; i < MAX_CUPONS; i++){
+
+        if (strcasecmp(codigo, cupons[i].codigo) == 0){
+            *desconto = cupons[i].porcentagem;
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 // Registra um pedido e salva no arquivo binário
 
 void registrar_e_salvar(
-    struct dados_pedido *vetor,
-    int *total_pedidos,
-    int mesa,
-    int pessoas,
-    char item[],
-    int tipo,
-    int qtd_item
-) {
-    struct dados_pedido pedido;
+    struct dados_pedido *vetor, 
+    int *total_pedidos, 
+    int mesa,                    
+    int pessoas, 
+    char item[], 
+    int tipo, int qtd_item,
+    const char *cupom,
+    float desconto) 
+    {
 
-    // Preenchimento da struct com os dados recebidos
+    struct dados_pedido pedido;
+    
+    // Preenche os dados básicos
 
     pedido.mesa = mesa;
     pedido.pessoas = pessoas;
     strncpy(pedido.item, item, sizeof(pedido.item));
-    pedido.item[sizeof(pedido.item) - 1] = '\0';
     pedido.tipo = tipo;
     pedido.quantidade = qtd_item;
-
-    // Preços fictícios
+    
+    // Preços fictícios (ou do cardápio)
 
     float valor_comida = 30.0;
     float valor_bebida = 5.0;
-
-    // Cálculo do subtotal baseado no tipo
-
-    if (tipo == 1) {
-        pedido.subtotal = qtd_item * valor_comida;
-    } else if (tipo == 2) {
-        pedido.subtotal = qtd_item * valor_bebida;
-    } else {
-        return;
-    }
-
-    // Valor individual da conta
-
+    
+    pedido.subtotal = (tipo == 1) ? qtd_item * valor_comida : qtd_item * valor_bebida;
     pedido.valor_individual = pedido.subtotal / pessoas;
+    
+    // Armazena cupom (novo)
 
-    // Adiciona ao vetor
+    strncpy(pedido.cupom, cupom, sizeof(pedido.cupom));
+    pedido.desconto = desconto;
+    
+    // Adiciona ao vetor e salva
+
     vetor[*total_pedidos] = pedido;
     (*total_pedidos)++;
-
-    // Salva no arquivo no modo append
-
+    
     FILE *arquivo = fopen(ARQUIVO_BINARIO, "ab");
-    if (arquivo == NULL) {
-        printf("Erro ao salvar pedido no arquivo binario\n");
-        return;
+    if (arquivo) {
+        fwrite(&pedido, sizeof(struct dados_pedido), 1, arquivo);
+        fclose(arquivo);
     }
-
-    fwrite(&pedido, sizeof(struct dados_pedido), 1, arquivo);
-    fclose(arquivo);
 }
 
 // Carrega os pedidos do arquivo binário para o vetor
@@ -81,20 +105,31 @@ int carregar_pedidos(struct dados_pedido vetor[], int *total_pedidos) {
         return 0;
     }
 
-    int lidos = fread(vetor, sizeof(struct dados_pedido), 200, arquivo);
-    fclose(arquivo);
+    // Lê pedidos até encontrar EOF
+    int lidos = 0;
+    while (lidos < 200 && 
+           fread(&vetor[lidos], sizeof(struct dados_pedido), 1, arquivo) == 1) {
+        lidos++;
+    }
 
+    fclose(arquivo);
     *total_pedidos = lidos;
     return lidos;
 }
 
 // Exibe um pedido individual
 
-void exibir_pedido(struct dados_pedido p) {
+void exibir_pedido(struct dados_pedido p, int eh_relatorio) {
     printf("Mesa %d | Pessoas: %d\n", p.mesa, p.pessoas);
     printf("Item: %s (%dx) [%s]\n", p.item, p.quantidade,
            (p.tipo == 1 ? "Comida" : "Bebida"));
     printf("Subtotal: R$%.2f\n", p.subtotal);
+
+    if (strlen(p.cupom) > 0 && !eh_relatorio){
+        printf("CUPOM %s APLICADO (%.0f%% OFF)\n", p.cupom, p.desconto * 100);
+        printf("VALOR COM DESCONTO: R$%.2f\n", p.subtotal * (1 - p.desconto));
+    }
+
     mid_line();
 }
 
@@ -102,10 +137,11 @@ void exibir_pedido(struct dados_pedido p) {
 
 void exibir_resumo(struct dados_pedido vetor[], int total_pedidos) {
     float total_geral = 0;
-    printf("\n === RESUMO DOS PEDIDOS === \n");
+    printf("\n=== RESUMO DOS PEDIDOS ===\n");
+    top_bottom();
 
     for (int i = 0; i < total_pedidos; i++) {
-        exibir_pedido(vetor[i]);
+        exibir_pedido(vetor[i], 1);  // 1 = modo relatório
         total_geral += vetor[i].subtotal;
     }
 
@@ -237,78 +273,58 @@ void gerar_relatorio_final() {
     }
 
     printf("\n=== RELATORIO FINAL DO DIA ===\n");
-
     calcular_metricas_gerais(pedidos, total_pedidos);
 
-    // Total por mesa
+    int mesas[100] = {0};
+    int total_mesas = 0;
 
-    int mesas_exibidas[100] = {0};
-    int n_mesas = 0;
-
+    // Identifica mesas únicas
     for (int i = 0; i < total_pedidos; i++) {
-        int ja_exibida = 0;
-        for (int j = 0; j < n_mesas; j++) {
-            if (mesas_exibidas[j] == pedidos[i].mesa) {
-                ja_exibida = 1;
+        int existe = 0;
+        for (int j = 0; j < total_mesas; j++) {
+            if (mesas[j] == pedidos[i].mesa) {
+                existe = 1;
                 break;
             }
         }
+        if (!existe) mesas[total_mesas++] = pedidos[i].mesa;
+    }
 
-        if (!ja_exibida) {
-            int mesa_atual = pedidos[i].mesa;
-            float total_mesa = 0;
-            printf("\nMESA %d\n", mesa_atual);
+    // Processa cada mesa
+    for (int i = 0; i < total_mesas; i++) {
+        int mesa = mesas[i];
+        float total_original = 0, total_final = 0;
+        char cupom[20] = "";
+        float desconto = 0;
+        int pessoas = 0;
 
-            mid_line();
+        printf("\nMESA %d\n", mesa);
+        mid_line();
 
-            for (int k = 0; k < total_pedidos; k++) {
-                if (pedidos[k].mesa == mesa_atual) {
-                    exibir_pedido(pedidos[k]);
-                    total_mesa += pedidos[k].subtotal;
+        for (int j = 0; j < total_pedidos; j++) {
+            if (pedidos[j].mesa == mesa) {
+                exibir_pedido(pedidos[j], 1);
+                total_original += pedidos[j].subtotal;
+                if (strlen(pedidos[j].cupom) > 0) {
+                    strcpy(cupom, pedidos[j].cupom);
+                    desconto = pedidos[j].desconto;
                 }
+                pessoas = pedidos[j].pessoas;
             }
-
-            printf("TOTAL DA MESA %d: R$%.2f\n", mesa_atual, total_mesa);
-            top_bottom();
-            mesas_exibidas[n_mesas++] = mesa_atual;
         }
+
+        total_final = total_original * (1 - desconto);
+
+        printf("\nRESUMO FINANCEIRO:\n");
+        printf("VALOR TOTAL:    R$%.2f\n", total_original);
+        if (strlen(cupom) > 0) {
+            printf("CUPOM %-8s   -%.0f%%\n", cupom, desconto * 100);
+            printf("VALOR FINAL:    R$%.2f\n", total_final);
+        }
+        printf("POR PESSOA:     R$%.2f\n", total_final / pessoas);
+        top_bottom();
     }
 
     gerar_ranking(pedidos, total_pedidos);
     calcular_subtotal_por_tipo(pedidos, total_pedidos);
-
-    // Determinar o item mais pedido
-
-    char nomes[50][50];
-    int quantidades[50] = {0};
-    int n_itens = 0;
-
-    for (int i = 0; i < total_pedidos; i++) {
-        int encontrado = 0;
-        for (int j = 0; j < n_itens; j++) {
-            if (strcmp(pedidos[i].item, nomes[j]) == 0) {
-                quantidades[j] += pedidos[i].quantidade;
-                encontrado = 1;
-                break;
-            }
-        }
-
-        if (!encontrado) {
-            strcpy(nomes[n_itens], pedidos[i].item);
-            quantidades[n_itens] = pedidos[i].quantidade;
-            n_itens++;
-        }
-    }
-
-    // Encontra o item com maior quantidade
-
-    int max_index = 0;
-    for (int i = 1; i < n_itens; i++) {
-        if (quantidades[i] > quantidades[max_index]) {
-            max_index = i;
-        }
-    }
-
-    printf("ITEM MAIS PEDIDO: %s (%d unidades)\n", nomes[max_index], quantidades[max_index]);
-    top_bottom();
 }
