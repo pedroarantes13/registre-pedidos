@@ -2,11 +2,14 @@
 #include "../registre-pedidos/dados_restaurante.h"
 #include "../cliente/func/funcoes.h"
 
+
 int main(){
   
  int escolha;
 
-    printf("[SEJA BEM VINDO NOVAMENTE!]\n\n");
+    printf("===============================\n");
+    printf(" BEM-VINDO DE VOLTA AO SISTEMA!\n");
+    printf("===============================\n\n");
 
  while(1){
 
@@ -48,11 +51,14 @@ int main(){
         break;
 
     case 3:
-        gerar_relatorio_final();
+
+        gerar_relatorio_final(); // Chamo a funcao do Daniel, onde vai gerar o relatorio
+
+        break;
 
     case 0:
 
-        printf("\n==SECAO ENCERRADA=="); //Finaliza secao 
+        printf("\n==SECAO FINALIZADA COM SUCESSO!=="); //Finaliza a secao 
         break;  
 
     default:
