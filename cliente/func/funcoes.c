@@ -1,217 +1,267 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "funcoes.h"
 
-// Imprime uma linha intermediária (visual)
-
+// Imprime uma linha intermediária para separar conteúdos
 void mid_line() {
     printf("-----------------------------------------------------\n");
 }
 
-// Imprime uma linha de topo/rodapé (visual)
-
+// Imprime uma linha superior/inferior de destaque
 void top_bottom() {
     printf("=====================================================\n");
 }
 
-// Sistema de cupons
-
-void inicializar_cupons(struct cupom_desconto cupons[]){
-
-    strcpy(cupons[0].codigo, "paulo");
-    cupons[0].porcentagem = 0.20f;
-
-    strcpy(cupons[1].codigo, "daniel");
-    cupons[1].porcentagem = 0.30f;
-
-    strcpy(cupons[2].codigo, "pedro");
-    cupons[2].porcentagem = 0.40f;
-
-    strcpy(cupons[3].codigo, "lizandro");
-    cupons[3].porcentagem = 0.50f;
-
-    strcpy(cupons[4].codigo, "gean");
-    cupons[4].porcentagem = 0.60f;
+// Inicializa o vetor de cupons com códigos e porcentagens fixas
+void inicializar_cupons(struct cupom_desconto cupons[]) {
+    strcpy(cupons[0].codigo, "paulo"); cupons[0].porcentagem = 0.20f;
+    strcpy(cupons[1].codigo, "daniel"); cupons[1].porcentagem = 0.30f;
+    strcpy(cupons[2].codigo, "pedro"); cupons[2].porcentagem = 0.40f;
+    strcpy(cupons[3].codigo, "lizandro"); cupons[3].porcentagem = 0.50f;
+    strcpy(cupons[4].codigo, "gean"); cupons[4].porcentagem = 0.60f;
 }
 
-int aplicar_cupom(char codigo[], struct cupom_desconto cupons[], float *desconto){
-    for (int i=0; i < MAX_CUPONS; i++){
-
-        if (strcasecmp(codigo, cupons[i].codigo) == 0){
+// Valida se o código do cupom é válido e define a porcentagem correspondente
+int aplicar_cupom(char codigo[], struct cupom_desconto cupons[], float *desconto) {
+    for (int i = 0; i < MAX_CUPONS; i++) {
+        if (strcasecmp(codigo, cupons[i].codigo) == 0) {
             *desconto = cupons[i].porcentagem;
             return 1;
         }
     }
-
     return 0;
 }
 
-// Registra um pedido e salva no arquivo binário
+// Lê e valida um inteiro dentro de um intervalo
+int ler_inteiro_seguro(const char *mensagem, int min, int max) {
+    char entrada[100];
+    int valor;
+    while (1) {
+        printf("%s", mensagem);
+        fgets(entrada, sizeof(entrada), stdin);
 
-void registrar_e_salvar(
-    struct dados_pedido *vetor, 
-    int *total_pedidos, 
-    int mesa,                    
-    int pessoas, 
-    char item[], 
-    int tipo, int qtd_item,
-    const char *cupom,
-    float desconto) 
-    {
+        if (sscanf(entrada, "%d", &valor) != 1) {
+            printf("\033[1;31mEntrada invalida! Digite um numero inteiro.\033[0m\n");
+            continue;
+        }
 
+        if (valor < min || valor > max) {
+            printf("\033[1;31mValor fora do intervalo permitido (%d a %d).\033[0m\n", min, max);
+            continue;
+        }
+
+        return valor;
+    }
+}
+
+// Valida entrada s/n com tratamento de erro
+int validar_resposta_sn(const char *mensagem) {
+    char entrada[10];
+    char resposta;
+    do {
+        printf("%s (s/n): ", mensagem);
+        fgets(entrada, sizeof(entrada), stdin);
+
+        if (sscanf(entrada, " %c", &resposta) != 1) {
+            printf("\033[1;31mEntrada invalida! Digite 's' ou 'n'.\033[0m\n");
+            continue;
+        }
+
+        resposta = tolower(resposta);
+        if (resposta != 's' && resposta != 'n') {
+            printf("\033[1;31mOpcao invalida! Digite 's' ou 'n'.\033[0m\n");
+        }
+
+    } while (resposta != 's' && resposta != 'n');
+
+    return (resposta == 's');
+}
+
+// Valida se uma string contém apenas letras e espaços
+int validar_nome_item(const char *str) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (!isalpha(str[i]) && str[i] != ' ') return 0;
+    }
+    return 1;
+}
+
+
+// Registra o pedido na memória e salva no arquivo binário
+void registrar_e_salvar(struct dados_pedido *vetor, int *total_pedidos, int mesa, int pessoas,
+                        char item[], int tipo, int qtd_item, const char *cupom, float desconto) {
     struct dados_pedido pedido;
-    
-    // Preenche os dados básicos
-
     pedido.mesa = mesa;
     pedido.pessoas = pessoas;
     strncpy(pedido.item, item, sizeof(pedido.item));
+    pedido.item[sizeof(pedido.item) - 1] = '\0';
     pedido.tipo = tipo;
     pedido.quantidade = qtd_item;
-    
-    // Preços fictícios (ou do cardápio)
 
     float valor_comida = 30.0;
     float valor_bebida = 5.0;
-    
     pedido.subtotal = (tipo == 1) ? qtd_item * valor_comida : qtd_item * valor_bebida;
     pedido.valor_individual = pedido.subtotal / pessoas;
-    
-    // Armazena cupom (novo)
 
     strncpy(pedido.cupom, cupom, sizeof(pedido.cupom));
+    pedido.cupom[sizeof(pedido.cupom) - 1] = '\0';
     pedido.desconto = desconto;
-    
-    // Adiciona ao vetor e salva
 
     vetor[*total_pedidos] = pedido;
     (*total_pedidos)++;
-    
+
     FILE *arquivo = fopen(ARQUIVO_BINARIO, "ab");
-    if (arquivo) {
+    if (arquivo != NULL) {
         fwrite(&pedido, sizeof(struct dados_pedido), 1, arquivo);
         fclose(arquivo);
     }
 }
 
-// Carrega os pedidos do arquivo binário para o vetor
-
-int carregar_pedidos(struct dados_pedido vetor[], int *total_pedidos) {
+// Carrega pedidos do arquivo binário para um vetor alocado dinamicamente
+int carregar_pedidos(struct dados_pedido **vetor, int *total_pedidos, int *capacidade) {
     FILE *arquivo = fopen(ARQUIVO_BINARIO, "rb");
     if (arquivo == NULL) {
-        *total_pedidos = 0;
         return 0;
     }
 
-    // Lê pedidos até encontrar EOF
-    int lidos = 0;
-    while (lidos < 200 && 
-           fread(&vetor[lidos], sizeof(struct dados_pedido), 1, arquivo) == 1) {
-        lidos++;
+    struct dados_pedido temp;
+    while (fread(&temp, sizeof(struct dados_pedido), 1, arquivo) == 1) {
+        if (*total_pedidos >= *capacidade) {
+            *capacidade = (*capacidade == 0) ? 10 : (*capacidade * 2);
+            struct dados_pedido *temp_ptr = realloc(*vetor, (*capacidade) * sizeof(struct dados_pedido));
+            if (temp_ptr == NULL) {
+                printf("Erro ao alocar memoria para carregar pedidos.\n");
+                fclose(arquivo);
+                return 0;
+            }
+            *vetor = temp_ptr;
+        }
+        (*vetor)[(*total_pedidos)++] = temp;
     }
 
     fclose(arquivo);
-    *total_pedidos = lidos;
-    return lidos;
+    return 1;
 }
 
-// Exibe um pedido individual
-
+// Exibe os dados de um pedido formatadamente
 void exibir_pedido(struct dados_pedido p, int eh_relatorio) {
     printf("Mesa %d | Pessoas: %d\n", p.mesa, p.pessoas);
-    printf("Item: %s (%dx) [%s]\n", p.item, p.quantidade,
-           (p.tipo == 1 ? "Comida" : "Bebida"));
+    printf("Item: %s (%dx) [%s]\n", p.item, p.quantidade, (p.tipo == 1 ? "Comida" : "Bebida"));
     printf("Subtotal: R$%.2f\n", p.subtotal);
-
-    if (strlen(p.cupom) > 0 && !eh_relatorio){
+    if (strlen(p.cupom) > 0 && !eh_relatorio) {
         printf("CUPOM %s APLICADO (%.0f%% OFF)\n", p.cupom, p.desconto * 100);
         printf("VALOR COM DESCONTO: R$%.2f\n", p.subtotal * (1 - p.desconto));
     }
-
     mid_line();
 }
 
-// Exibe um resumo de todos os pedidos
+// Gera o relatório geral do sistema com total por mesa e ranking de vendas
+void gerar_relatorio_final() {
+    struct dados_pedido *pedidos = NULL;
+    int total_pedidos = 0;
+    int capacidade = 0;
 
-void exibir_resumo(struct dados_pedido vetor[], int total_pedidos) {
-    float total_geral = 0;
-    printf("\n=== RESUMO DOS PEDIDOS ===\n");
-    top_bottom();
-
-    for (int i = 0; i < total_pedidos; i++) {
-        exibir_pedido(vetor[i], 1);  // 1 = modo relatório
-        total_geral += vetor[i].subtotal;
+    if (!carregar_pedidos(&pedidos, &total_pedidos, &capacidade)) {
+        printf("Nenhum pedido registrado ainda.\n");
+        return;
     }
 
-    printf("TOTAL ARRECADADO: R$%.2f\n", total_geral);
-    top_bottom();
-}
+    calcular_metricas_gerais(pedidos, total_pedidos);
 
-// Calcular: total arrecadado, total de itens vendidos e arrecadação média por mesa
-
-void calcular_metricas_gerais(struct dados_pedido pedidos[], int total_pedidos){
-    float total_arrecadado = 0;
-    int total_itens = 0;
-    int mesas[100] = {0};
-    int total_mesas = 0;
-
-    for (int i=0; i < total_pedidos; i++){
-
-        total_arrecadado += pedidos[i].subtotal;
-        total_itens += pedidos[i].quantidade;
-
-        // Conta mesas únicas
-
-        int mesa_existe = 0;
-
-        for (int j=0; j < total_mesas; j++){
+    int mesas[100] = {0}, total_mesas = 0;
+    for (int i = 0; i < total_pedidos; i++) {
+        int existe = 0;
+        for (int j = 0; j < total_mesas; j++) {
             if (mesas[j] == pedidos[i].mesa) {
-                mesa_existe = 1;
+                existe = 1;
                 break;
             }
         }
+        if (!existe) mesas[total_mesas++] = pedidos[i].mesa;
+    }
 
-        if (!mesa_existe) mesas[total_mesas++] = pedidos[i].mesa;
+    for (int i = 0; i < total_mesas; i++) {
+        int mesa = mesas[i];
+        float total_original = 0, total_final = 0;
+        char cupom[20] = "";
+        float desconto = 0;
+        int pessoas = 0;
+
+        printf("\nMESA %d\n", mesa);
+        mid_line();
+        for (int j = 0; j < total_pedidos; j++) {
+            if (pedidos[j].mesa == mesa) {
+                exibir_pedido(pedidos[j], 1);
+                total_original += pedidos[j].subtotal;
+                if (strlen(pedidos[j].cupom) > 0) {
+                    strcpy(cupom, pedidos[j].cupom);
+                    desconto = pedidos[j].desconto;
+                }
+                pessoas = pedidos[j].pessoas;
+            }
+        }
+        total_final = total_original * (1 - desconto);
+        printf("\nRESUMO FINANCEIRO:\n");
+        printf("VALOR TOTAL:    R$%.2f\n", total_original);
+        if (strlen(cupom) > 0) {
+            printf("CUPOM %-8s   -%.0f%%\n", cupom, desconto * 100);
+            printf("VALOR FINAL:    R$%.2f\n", total_final);
+        }
+        printf("POR PESSOA:     R$%.2f\n", total_final / pessoas);
+        top_bottom();
+    }
+
+    gerar_ranking(pedidos, total_pedidos);
+    calcular_subtotal_por_tipo(pedidos, total_pedidos);
+
+    free(pedidos);
+}
+
+// Calcula totais gerais: arrecadação, média por mesa e total de itens
+void calcular_metricas_gerais(struct dados_pedido pedidos[], int total_pedidos) {
+    float total_arrecadado = 0;
+    int total_itens = 0;
+    int mesas[100] = {0}, total_mesas = 0;
+
+    for (int i = 0; i < total_pedidos; i++) {
+        total_arrecadado += pedidos[i].subtotal;
+        total_itens += pedidos[i].quantidade;
+        int existe = 0;
+        for (int j = 0; j < total_mesas; j++) {
+            if (mesas[j] == pedidos[i].mesa) {
+                existe = 1;
+                break;
+            }
+        }
+        if (!existe) mesas[total_mesas++] = pedidos[i].mesa;
     }
 
     printf("\n=== RESUMO GERAL ===\n");
-
     top_bottom();
-
     printf("TOTAL ARRECADADO: R$ %10.2f\n", total_arrecadado);
     printf("MEDIA POR MESA:  R$ %10.2f\n", total_mesas > 0 ? total_arrecadado / total_mesas : 0);
     printf("ITENS VENDIDOS:  %10d unidades\n", total_itens);
-
     top_bottom();
 }
 
-// Calcular arrecadação de comidas x bebidas
-
-void calcular_subtotal_por_tipo(struct dados_pedido pedidos[], int total_pedidos){
+// Separa e exibe o subtotal arrecadado por tipo (comida ou bebida)
+void calcular_subtotal_por_tipo(struct dados_pedido pedidos[], int total_pedidos) {
     float total_comidas = 0, total_bebidas = 0;
-
-    for (int i=0; i < total_pedidos; i++){
+    for (int i = 0; i < total_pedidos; i++) {
         if (pedidos[i].tipo == 1) total_comidas += pedidos[i].subtotal;
         else total_bebidas += pedidos[i].subtotal;
     }
-
     printf("\n=== SUBTOTAL POR CATEGORIA ===\n");
-
     top_bottom();
-
     printf("COMIDAS: R$ %8.2f\n", total_comidas);
     printf("BEBIDAS: R$ %8.2f\n", total_bebidas);
     printf("TOTAL  : R$ %8.2f\n", total_comidas + total_bebidas);
-
     top_bottom();
 }
 
-// Gera um ranking dos itens mais pedidos
-
-void gerar_ranking(struct dados_pedido pedidos[], int total_pedidos){
-
+// Cria ranking dos itens mais vendidos com base na quantidade
+void gerar_ranking(struct dados_pedido pedidos[], int total_pedidos) {
     struct item_ranking {
         char nome[50];
         int quantidade;
@@ -219,20 +269,17 @@ void gerar_ranking(struct dados_pedido pedidos[], int total_pedidos){
     } ranking[50];
 
     int n_itens = 0;
-
-    for (int i=0; i < total_pedidos; i++){
+    for (int i = 0; i < total_pedidos; i++) {
         int encontrado = 0;
-
-        for (int j=0; j < n_itens; j++){
-            if (strcmp(pedidos[i].item, ranking[j].nome) == 0){
+        for (int j = 0; j < n_itens; j++) {
+            if (strcmp(pedidos[i].item, ranking[j].nome) == 0) {
                 ranking[j].quantidade += pedidos[i].quantidade;
                 ranking[j].subtotal += pedidos[i].subtotal;
                 encontrado = 1;
                 break;
             }
         }
-
-        if (!encontrado && n_itens < 50){
+        if (!encontrado && n_itens < 50) {
             strcpy(ranking[n_itens].nome, pedidos[i].item);
             ranking[n_itens].quantidade = pedidos[i].quantidade;
             ranking[n_itens].subtotal = pedidos[i].subtotal;
@@ -251,80 +298,10 @@ void gerar_ranking(struct dados_pedido pedidos[], int total_pedidos){
     }
 
     printf("\n=== TOP 5 ITENS MAIS VENDIDOS ===\n");
-
     top_bottom();
-
-    for (int i=0; i < (n_itens < 5 ? n_itens : 5); i++){
-        printf("%do: %-20s | %3dx | R$ %7.2f\n", i + 1, ranking[i].nome, ranking[i].quantidade, ranking[i].subtotal);
+    for (int i = 0; i < (n_itens < 5 ? n_itens : 5); i++) {
+        printf("%do: %-20s | %3dx | R$ %7.2f\n", i + 1, ranking[i].nome,
+               ranking[i].quantidade, ranking[i].subtotal);
     }
-
     top_bottom();
-}
-
-// Gera o relatório final do dia com item mais pedido e total arrecadado por mesa
-
-void gerar_relatorio_final() {
-    struct dados_pedido pedidos[200];
-    int total_pedidos = 0;
-
-    if (!carregar_pedidos(pedidos, &total_pedidos)) {
-        printf("Nenhum pedido registrado ainda.\n");
-        return;
-    }
-
-    printf("\n=== RELATORIO FINAL DO DIA ===\n");
-    calcular_metricas_gerais(pedidos, total_pedidos);
-
-    int mesas[100] = {0};
-    int total_mesas = 0;
-
-    // Identifica mesas únicas
-    for (int i = 0; i < total_pedidos; i++) {
-        int existe = 0;
-        for (int j = 0; j < total_mesas; j++) {
-            if (mesas[j] == pedidos[i].mesa) {
-                existe = 1;
-                break;
-            }
-        }
-        if (!existe) mesas[total_mesas++] = pedidos[i].mesa;
-    }
-
-    // Processa cada mesa
-    for (int i = 0; i < total_mesas; i++) {
-        int mesa = mesas[i];
-        float total_original = 0, total_final = 0;
-        char cupom[20] = "";
-        float desconto = 0;
-        int pessoas = 0;
-
-        printf("\nMESA %d\n", mesa);
-        mid_line();
-
-        for (int j = 0; j < total_pedidos; j++) {
-            if (pedidos[j].mesa == mesa) {
-                exibir_pedido(pedidos[j], 1);
-                total_original += pedidos[j].subtotal;
-                if (strlen(pedidos[j].cupom) > 0) {
-                    strcpy(cupom, pedidos[j].cupom);
-                    desconto = pedidos[j].desconto;
-                }
-                pessoas = pedidos[j].pessoas;
-            }
-        }
-
-        total_final = total_original * (1 - desconto);
-
-        printf("\nRESUMO FINANCEIRO:\n");
-        printf("VALOR TOTAL:    R$%.2f\n", total_original);
-        if (strlen(cupom) > 0) {
-            printf("CUPOM %-8s   -%.0f%%\n", cupom, desconto * 100);
-            printf("VALOR FINAL:    R$%.2f\n", total_final);
-        }
-        printf("POR PESSOA:     R$%.2f\n", total_final / pessoas);
-        top_bottom();
-    }
-
-    gerar_ranking(pedidos, total_pedidos);
-    calcular_subtotal_por_tipo(pedidos, total_pedidos);
 }
