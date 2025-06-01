@@ -10,14 +10,12 @@ typedef struct {
   char item[50];
   int tipo;
   float valor;
-  int tempo_preparo;
 } Cardapio;
 
-void escrever_dados(Cardapio);
+int adicionar_item(Cardapio);
 
-Cardapio* ler_dados(char filename[], int *num_itens);
+int carregar_cardapio(char filename[], Cardapio *cardapio);
 
-//Pendente implementação
-//    -> Utilizar a função ler_dados
-//    -> Criar um contador para passar como parâmetro e criar loop de pintf's para imprimir os dados lidos
-void imprimir_dados(char filename[], int *num_itens);
+int imprimir_cardapio(char filename[]);
+
+char* tipo_str(int tipo);
