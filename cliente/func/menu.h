@@ -32,3 +32,5 @@ int mostrarMenu(void);
 
 
 void fazerPedido(struct pedido* p);
+
+void pausarTela(void);
