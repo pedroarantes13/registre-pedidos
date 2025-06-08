@@ -41,9 +41,9 @@ int adicionar_item(Cardapio item) {
 // Função para carregar todo o cardapio para a memoria em um array de itens do tipo Cardapio (passagem por referencia)
 // Retorna 1 se bem sucedido, caso contrário retorna 0
 
-int carregar_cardapio(char filename[50], Cardapio *cardapio) {
+int carregar_cardapio(char *filename, Cardapio **cardapio) {
 
-  cardapio = (Cardapio *)calloc(1,sizeof(Cardapio));
+  *cardapio = NULL;
 
   Cardapio item_atual;
 
@@ -54,20 +54,15 @@ int carregar_cardapio(char filename[50], Cardapio *cardapio) {
   if (fptr == NULL) {
 
     printf("Falha ao tentar abrir cardapio para leitura.\n");
-
-    free(cardapio);
-
     return 1;
 
   }
 
   while (fread(&item_atual, sizeof(Cardapio), 1, fptr) == 1) {
 
-    cardapio[cont] = item_atual;
-
     cont++;
 
-    Cardapio *tmp = realloc(cardapio, sizeof(Cardapio)*(cont + 1));
+    Cardapio *tmp = realloc(*cardapio, sizeof(Cardapio)*(cont));
 
     if (tmp == NULL) {
 
@@ -75,11 +70,15 @@ int carregar_cardapio(char filename[50], Cardapio *cardapio) {
 
       fclose(fptr);
 
+      free(*cardapio);
+
       return 1;
 
     }
 
-    cardapio = tmp;
+    *cardapio = tmp;
+
+    (*cardapio)[cont-1] = item_atual;
 
   }
 
@@ -147,3 +146,12 @@ int imprimir_cardapio(char *filename) {
 
 }
 
+int total_itens_cardapio(char *filename) {
+    FILE *f = fopen(filename, "rb");
+    if (!f) return 0;
+    
+    fseek(f, 0, SEEK_END);
+    int total = ftell(f) / sizeof(Cardapio);
+    fclose(f);
+    return total;
+}
