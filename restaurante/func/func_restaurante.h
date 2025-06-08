@@ -14,7 +14,7 @@ typedef struct {
 
 int adicionar_item(Cardapio);
 
-int carregar_cardapio(char filename[], Cardapio *cardapio);
+int carregar_cardapio(char filename[], Cardapio **cardapio);
 
 int imprimir_cardapio(char filename[]);
 
