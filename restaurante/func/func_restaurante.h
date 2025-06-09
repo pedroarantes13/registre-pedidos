@@ -19,3 +19,9 @@ int carregar_cardapio(char filename[], Cardapio *cardapio);
 int imprimir_cardapio(char filename[]);
 
 char* tipo_str(int tipo);
+
+//Prototipos do menu restaurante
+
+void adicionarItem(); 
+
+int menu_restaurante();
