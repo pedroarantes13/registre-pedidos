@@ -20,4 +20,12 @@ int imprimir_cardapio(char *filename);
 
 char* tipo_str(int tipo);
 
+
 int total_itens_cardapio(char *filename);
+
+//Prototipos do menu restaurante
+
+void adicionarItem(); 
+
+int menu_restaurante();
+
