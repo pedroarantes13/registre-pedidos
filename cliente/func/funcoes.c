@@ -38,15 +38,15 @@ void inicializar_cupons(struct cupom_desconto cupons[]) {
 /* Verifica se um cupom de desconto informado pelo usuário é válido.
  Se for, define a porcentagem de desconto correspondente.
 
- Parâmetros:
-   codigo → string digitada pelo usuário (código do cupom).
-   cupons → vetor de cupons previamente inicializado.
-   desconto → ponteiro para float onde será armazenado o valor do desconto.
-
  Retorno:
    1 se o cupom for válido; 0 caso contrário.*/
 
-int aplicar_cupom(char codigo[], struct cupom_desconto cupons[], float *desconto) {
+int aplicar_cupom(
+    char codigo[],                   // String digitada pelo usuário (código do cupom).
+    struct cupom_desconto cupons[],  // Vetor de cupons previamente inicializado.
+    float *desconto)                 // Ponteiro para float onde será armazenado o valor do desconto.
+    {
+
     for (int i = 0; i < MAX_CUPONS; i++) {
         // Compara o código digitado com o código do cupom atual.
         // strcasecmp ignora diferença entre maiúsculas/minúsculas.
@@ -63,15 +63,14 @@ int aplicar_cupom(char codigo[], struct cupom_desconto cupons[], float *desconto
  Garante que a entrada seja numérica e que esteja entre os limites definidos.
  Utiliza fgets e sscanf para evitar problemas com lixo no buffer (como '\n').
 
- Parâmetros:
-   mensagem → texto que será exibido ao usuário para solicitar o valor.
-   min → valor mínimo permitido.
-   max → valor máximo permitido.
-
  Retorno:
    Um número inteiro válido, dentro do intervalo [min, max]. */
 
-int ler_inteiro_seguro(const char *mensagem, int min, int max) {
+int ler_inteiro_seguro(
+    const char *mensagem, // Texto que será exibido ao usuário para solicitar o valor.
+    int min,              // Valor mínimo permitido.
+    int max)              // Valor máximo permitido.
+    {
     char entrada[100]; // Buffer para armazenar a linha digitada
     int valor;         // Variável onde será armazenado o número convertido
 
@@ -162,16 +161,15 @@ int validar_nome_item(const char *str) {
 /* Retorna o ponteiro para um item específico do cardápio.
  A posição informada pelo usuário é 1-based, então é ajustada para 0-based.
 
- Parâmetros:
-   posicao → número do item no cardápio (1 a N).
-   cardapio → vetor de itens previamente carregado.
-   total_itens → tamanho total do vetor.
-
  Retorno:
    Ponteiro para o item desejado se a posição for válida.
    NULL se a posição estiver fora dos limites. */
 
-Cardapio* buscar_item_cardapio(int posicao, Cardapio *cardapio, int total_itens) {
+Cardapio* buscar_item_cardapio(
+        int posicao,        // Número do item no cardápio (1 a N).
+        Cardapio *cardapio, // Vetor de itens previamente carregado.
+        int total_itens)    // Tamanho total do vetor.
+      {
     // Verifica se a posição está dentro do intervalo válido do vetor.
 
     if (posicao < 1 || posicao > total_itens) {
@@ -187,34 +185,22 @@ Cardapio* buscar_item_cardapio(int posicao, Cardapio *cardapio, int total_itens)
  Função crítica do sistema: garante que os dados do pedido sejam armazenados
  corretamente em memória e também persistam no arquivo.
 
- Parâmetros:
-   vetor → ponteiro duplo para o vetor dinâmico de pedidos.
-   total_pedidos → ponteiro para o total atual de pedidos cadastrados.
-   capacidade → ponteiro para a capacidade máxima alocada no vetor.
-   mesa → número da mesa associada ao pedido.
-   pessoas → número de pessoas na mesa (para divisão).
-   posicao_item → índice escolhido do item no cardápio (1-based).
-   cardapio → vetor de itens do cardápio previamente carregado.
-   total_itens_cardapio → tamanho do vetor do cardápio.
-   quantidade → quantidade de itens pedidos.
-   cupom → código de desconto aplicado (ou string vazia se não houver).
-   desconto → valor do desconto aplicado (entre 0 e 1).
-
  Retorno:
    Nenhum (void). Em caso de falha, imprime mensagens de erro.*/
 
 void registrar_e_salvar(
-    struct dados_pedido **vetor,       // ponteiro duplo
-    int *total_pedidos,
-    int *capacidade,
-    int mesa,
-    int pessoas,
-    int posicao_item,
-    Cardapio *cardapio,
-    int total_itens_cardapio,
-    int quantidade,
-    const char *cupom,
-    float desconto) {
+    struct dados_pedido **vetor,    // Ponteiro duplo para o vetor dinâmico de pedidos.
+    int *total_pedidos,             // Ponteiro para o total atual de pedidos cadastrados.
+    int *capacidade,                // Ponteiro para a capacidade máxima alocada no vetor.
+    int mesa,                       // Número da mesa associada ao pedido.
+    int pessoas,                    // Número de pessoas na mesa (para divisão).
+    int posicao_item,               // Índice escolhido do item no cardápio (1-based).
+    Cardapio *cardapio,             // Vetor de itens do cardápio previamente carregado.
+    int total_itens_cardapio,       // Tamanho do vetor do cardápio.
+    int quantidade,                 // Quantidade de itens pedidos.
+    const char *cupom,              // Código de desconto aplicado (ou string vazia se não houver).
+    float desconto)                 // Valor do desconto aplicado (entre 0 e 1).
+    {   
     
     // Valida se o cardápio existe e se a posição do item é válida.
     if (!cardapio || posicao_item < 1 || posicao_item > total_itens_cardapio) {
@@ -273,15 +259,15 @@ void registrar_e_salvar(
  Essa função é chamada ao iniciar o programa, para recuperar os dados do dia atual.
  Utiliza realloc para aumentar o vetor dinamicamente conforme necessário.
 
- Parâmetros:
-   vetor → ponteiro duplo que armazenará o vetor dinâmico de pedidos.
-   total_pedidos → ponteiro para contador de pedidos já carregados.
-   capacidade → ponteiro para o tamanho atual do vetor alocado.
-
  Retorno:
    1 se a leitura foi bem-sucedida; 0 se houve erro (como falha de alocação). */
 
-int carregar_pedidos(struct dados_pedido **vetor, int *total_pedidos, int *capacidade) {
+int carregar_pedidos(
+    struct dados_pedido **vetor, // Ponteiro duplo que armazenará o vetor dinâmico de pedidos.
+    int *total_pedidos,          // Ponteiro para contador de pedidos já carregados.
+    int *capacidade)             // Ponteiro para o tamanho atual do vetor alocado
+    {
+
     // Abre o arquivo de pedidos no modo leitura binária.
     FILE *arquivo = fopen(ARQUIVO_BINARIO, "rb");
 
@@ -344,35 +330,16 @@ void exibir_pedido(struct dados_pedido p, int eh_relatorio) {
     mid_line();
 }
 
-/*
-  Gera um relatório completo dos pedidos do dia, agrupando por mesa e exibindo:
-  - Lista de pedidos por mesa, com subtotais.
-  - Aplicação de cupons de desconto (se houver).
-  - Divisão de valores por pessoa.
-  - Métricas gerais (arrecadação total, itens vendidos, etc.).
-  - Ranking dos itens mais vendidos.
-  - Subtotais por categoria (pratos, bebidas, sobremesas).
-  
-  Esta função é o ponto central de consolidação dos dados, sendo chamada ao encerrar o programa.
-  Ela carrega os pedidos do arquivo binário, processa os dados e exibe as informações formatadas.
-  
-  Fluxo:
-    1. Carrega pedidos do arquivo binário para memória.
-    2. Calcula métricas gerais (arrecadação, média por mesa, etc.).
-    3. Agrupa pedidos por mesa, exibindo detalhes e totais por mesa.
-    4. Gera o ranking de itens mais vendidos.
-    5. Exibe subtotais por categoria de item.
-  
-  Observações:
-    - Se não houver pedidos, exibe mensagem informativa.
-    - Libera a memória alocada para o vetor de pedidos ao final.
- */
+/* Gera o relatório final do dia, agrupando os pedidos por mesa.
+ Exibe métricas gerais, detalhes dos pedidos por mesa (com desconto, se houver),
+ e mostra o ranking de itens mais vendidos e subtotal por categoria.
+ Essa função deve ser chamada ao encerrar o programa. */
 
 void gerar_relatorio_final() {
-    // Inicializa variáveis para armazenar pedidos carregados do arquivo.
+    // Ponteiro para vetor dinâmico de pedidos.
     struct dados_pedido *pedidos = NULL;
-    int total_pedidos = 0;
-    int capacidade = 0;
+    int total_pedidos = 0;    // Quantidade real de pedidos lidos do arquivo.
+    int capacidade = 0;       // Capacidade alocada inicialmente (ajustada dinamicamente).
 
     // Tenta carregar pedidos do arquivo binário. Se falhar, exibe mensagem e retorna.
     if (!carregar_pedidos(&pedidos, &total_pedidos, &capacidade)) {
@@ -384,30 +351,32 @@ void gerar_relatorio_final() {
     calcular_metricas_gerais(pedidos, total_pedidos);
 
     // Identifica todas as mesas únicas com pedidos registrados.
-    int mesas[100] = {0}, total_mesas = 0;
+    int mesas[50] = {0}, total_mesas = 0;
     for (int i = 0; i < total_pedidos; i++) {
         int existe = 0;
+        // Verifica se a mesa do pedido já está no vetor de mesas únicas.
         for (int j = 0; j < total_mesas; j++) {
             if (mesas[j] == pedidos[i].mesa) {
                 existe = 1;
                 break;
             }
         }
+        // Se a mesa ainda não estiver no vetor, adiciona.
         if (!existe) mesas[total_mesas++] = pedidos[i].mesa;
     }
 
     // Processa cada mesa individualmente: exibe pedidos e calcula totais.
     for (int i = 0; i < total_mesas; i++) {
-        int mesa = mesas[i];
-        float total_original = 0, total_final = 0;
-        char cupom[20] = "";
-        float desconto = 0;
-        int pessoas = 0;
+        int mesa = mesas[i];                         // Número da mesa atual.
+        float total_original = 0, total_final = 0;   // Soma bruta dos pedidos da mesa; Valor total com desconto
+        char cupom[20] = "";                         // Cupom aplicado (se houver)..
+        float desconto = 0;                          // Porcentagem de desconto.
+        int pessoas = 0;                             // Número de pessoas sentadas na mesa.
 
         printf("\nMESA %d\n", mesa);
         mid_line();
 
-        // Itera sobre todos os pedidos para encontrar os da mesa atual.
+        // Percorre todos os pedidos da mesa atual.
         for (int j = 0; j < total_pedidos; j++) {
             if (pedidos[j].mesa == mesa) {
                 exibir_pedido(pedidos[j], 1); // Exibe detalhes do pedido (modo relatório).
@@ -443,30 +412,25 @@ void gerar_relatorio_final() {
     free(pedidos);
 }
 
-/*
- Calcula e exibe métricas agregadas sobre os pedidos do dia, incluindo:
- - Total arrecadado (soma de todos os subtotais dos pedidos).
- - Média de gasto por mesa.
- - Total de itens vendidos (soma de todas as quantidades).
- 
+/* Calcula e exibe estatísticas gerais do dia com base nos pedidos registrados.
+
+ As métricas incluem:
+ - Valor total arrecadado (sem desconto),
+ - Média de faturamento por mesa,
+ - Total de itens vendidos.
+
  Parâmetros:
-   pedidos → Vetor de structs 'dados_pedido' contendo todos os pedidos registrados.
-   total_pedidos → Número total de pedidos no vetor.
- 
- Observações:
-   - Ignora descontos aplicados (trabalha com subtotais brutos).
-   - Identifica mesas únicas para calcular a média corretamente.
-   - Exibe os resultados formatados com separadores visuais.
- */
+   pedidos → vetor com todos os pedidos registrados.
+   total_pedidos → quantidade total de pedidos no vetor.*/
 
 void calcular_metricas_gerais(struct dados_pedido pedidos[], int total_pedidos) {
     float total_arrecadado = 0; // Acumula o valor bruto de todos os pedidos
     int total_itens = 0;        // Contador de itens vendidos
-    int mesas[100] = {0}, total_mesas = 0; // Armazena o número de mesas únicas; Contador de mesas distintas
+    int mesas[50] = {0}, total_mesas = 0; // Armazena o número de mesas únicas; Contador de mesas distintas
 
-    // Itera sobre todos os pedidos para calcular totais e identificar mesas.
+    // Percorre todos os pedidos para somar valores e identificar mesas únicas.
     for (int i = 0; i < total_pedidos; i++) {
-        total_arrecadado += pedidos[i].subtotal; // Soma subtotais
+        total_arrecadado += pedidos[i].subtotal; // Soma subtotais (sem desconto)
         total_itens += pedidos[i].quantidade;    // Soma quantidades
 
         // Verifica se a mesa já foi registrada no vetor 'mesas'
@@ -490,24 +454,19 @@ void calcular_metricas_gerais(struct dados_pedido pedidos[], int total_pedidos) 
     top_bottom();
 }
 
-/*
- Calcula e exibe o subtotal de vendas agrupado por categoria de itens:
- - Pratos (tipo 0), Bebidas (tipo 1), Sobremesas (tipo 2).
- 
- Parâmetros:
-   pedidos → Vetor de structs 'dados_pedido' com todos os pedidos registrados.
-   total_pedidos → Número total de pedidos no vetor.
- 
- Fluxo:
-   1. Percorre todos os pedidos, acumulando os subtotais por categoria.
-   2. Exibe os valores formatados, com destaque para o total geral.
- 
- Observações:
-   - Assume que os tipos são definidos como:
-     0: Pratos, 1: Bebidas, 2: Sobremesas.
-   - Ignora descontos (trabalha com subtotais brutos).
-   - Exibe uma tabela formatada com linhas de separação.
- */
+/* Calcula e exibe os subtotais arrecadados por categoria de itens:
+
+    - Pratos principais (tipo 0)
+    - Bebidas (tipo 1)
+    - Sobremesas (tipo 2)
+
+A função percorre todos os pedidos e classifica o subtotal de cada um de acordo com o campo tipo, acumulando os valores separadamente.
+
+Tipos desconhecidos são ignorados silenciosamente.
+
+Parâmetros:
+    pedidos[] → vetor contendo todos os pedidos do dia.
+    total_pedidos → quantidade total de elementos no vetor.*/
 
 void calcular_subtotal_por_tipo(struct dados_pedido pedidos[], int total_pedidos) {
     float total_pratos = 0, total_bebidas = 0, total_sobremesas = 0; // Acumulam itens separados por tipo
@@ -532,30 +491,16 @@ void calcular_subtotal_por_tipo(struct dados_pedido pedidos[], int total_pedidos
     top_bottom();
 }
 
-/*
- Gera um ranking dos itens mais vendidos, ordenados por quantidade total.
- - Agrupa pedidos repetidos pelo nome do item.
- - Calcula a quantidade total vendida e o subtotal acumulado por item.
- - Ordena os itens em ordem decrescente de quantidade.
- - Exibe o Top 5 (ou menos, se houver menos itens).
- 
- Parâmetros:
-   pedidos → Vetor de structs 'dados_pedido' com todos os pedidos registrados.
-   total_pedidos → Número total de pedidos no vetor.
- 
- Estruturas internas:
-   - Usa um vetor auxiliar 'ranking' do tipo 'item_ranking' para armazenar:
-       nome: Nome do item (copiado de 'pedidos[i].item').
-       quantidade: Soma das quantidades vendidas.
-       subtotal: Soma dos subtotais (preço × quantidade).
- 
- Observações:
-   - Limita o ranking a 50 itens distintos (tamanho do vetor 'ranking').
-   - Itens com nomes idênticos são agrupados (case-sensitive).
-   - Se houver empate em quantidade, a ordem de exibição é indefinida.
- */
+/* Gera e exibe o ranking dos 5 itens mais vendidos no dia.
+   Agrupa os pedidos pelo nome do item, somando as quantidades e subtotais.
+   Em seguida, ordena os itens por quantidade vendida (em ordem decrescente) e exibe os 5 primeiros colocados (ou menos, se houver menos de 5).
+
+Parâmetros:
+    pedidos[] → vetor de structs contendo todos os pedidos do dia.
+    total_pedidos → número total de pedidos registrados. */
 
 void gerar_ranking(struct dados_pedido pedidos[], int total_pedidos) {
+    // Struct auxiliar para consolidar informações dos itens
     struct item_ranking {
         char nome[50];   // Nome do item (copiado do pedido)
         int quantidade;  // Quantidade total vendida
