@@ -51,9 +51,6 @@ int carregar_pedidos(struct dados_pedido **vetor, int *total_pedidos, int *capac
 // Exibe visualmente um pedido formatado
 void exibir_pedido(struct dados_pedido p, int eh_relatorio);
 
-// Mostra resumo de todos os pedidos realizados
-void exibir_resumo(struct dados_pedido pedidos[], int num_pedidos);
-
 // Gera o relatório final com totais e ranking de vendas
 void gerar_relatorio_final();
 
