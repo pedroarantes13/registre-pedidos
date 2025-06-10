@@ -1,6 +1,6 @@
 #pragma once
 
-#include "func_restaurante.h"
+#include "../../restaurante/func/func_restaurante.h"
 
 #define ARQUIVO_BINARIO "pedidos.bin"
 #define MAX_CUPONS 5
