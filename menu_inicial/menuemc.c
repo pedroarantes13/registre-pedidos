@@ -1,16 +1,6 @@
 #include <stdio.h>
-#include "../restaurante/menu/menu.h" 
-#include "../cliente/menu/menu.h"
 #include "../restaurante/func/func_restaurante.h"
 #include "../cliente/func/funcoes.h"
-
-void menu_cliente() {
-    
-}
-
-void menu_proprietario() {
-    
-}
 
 int main() {
     int opcao;
@@ -40,12 +30,15 @@ int main() {
 
         switch (opcao) {
             case 1:
+                system("cls");
                 menu_cliente();
                 break;
             case 2:
-                menu_proprietario();
+                system("cls");
+                menu_restaurante();
                 break;
             case 3:
+                system("cls");
                 printf("\n|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
                 printf("|    SECAO FINALIZADA    |\n");
                 printf("|........................|\n");
@@ -54,6 +47,7 @@ int main() {
                 printf("|........................|\n");
                 return 0;
             default:
+                system("cls");
                 printf("\n|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
                 printf("|    OPCAO INVALIDA!     |\n");
                 printf("|........................|\n");
