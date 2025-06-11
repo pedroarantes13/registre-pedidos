@@ -24,13 +24,13 @@ void mostrarSobremesas() {
     printf("Trufa - R$ 5.00\n"); 
 }
 
-// Função para pausar a tela até o usuário pressionar Enter
+    // Função para pausar a tela até o usuário pressionar Enter
 void pausarTela() {
     printf("\nPressione Enter para continuar...");
     while (getchar() != '\n');
     getchar();
 }
-
+    // Mostra o menu principal e retorna a escolha do usuário
 int mostrarMenu() {
     int escolha = 0;
 
@@ -49,6 +49,7 @@ int mostrarMenu() {
     return escolha;
 }
 
+    // Função para fazer um pedido
 void fazerPedido(struct pedido* p) {
     int tipo, opcao, qtd;
 
@@ -57,10 +58,12 @@ void fazerPedido(struct pedido* p) {
     fgets(p->nome_cliente, TAM_NOME, stdin);
     p->nome_cliente[strcspn(p->nome_cliente, "\n")] = 0;
 
+    // Pede o tipo de item
     printf("\nQual tipo de item deseja pedir?\n");
     printf("1 - Prato principal\n2 - Bebida\n3 - Sobremesa\n");
     scanf("%d", &tipo);
 
+    // Mostra o cardápio conforme o tipo escolhido
     if (tipo == 1) {
         mostrarPratosPrincipais();
     } else if (tipo == 2) {
@@ -72,12 +75,15 @@ void fazerPedido(struct pedido* p) {
         return;
     }
 
+    // Pede a opção do item
     printf("\nEscolha uma opcao (1 a 3): ");
     scanf("%d", &opcao);
-
+    
+    // Pede a quantidade
     printf("Quantidade: ");
     scanf("%d", &qtd);
 
+    // Cria o novo item conforme escolha
     struct item novo;
 
     if (tipo == 1) {
@@ -96,12 +102,13 @@ void fazerPedido(struct pedido* p) {
         else if (opcao == 3) { strcpy(novo.nome, "Trufa"); novo.preco_unitario = 5.0; }
         else { printf("Opcao invalida.\n"); return; }
     }
-
+    // Preenche os dados do item e do pedido
     novo.quantidade = qtd;
     p->itens[0] = novo;
     p->total_itens = 1;
     p->total_pedido = qtd * novo.preco_unitario;
 
+    // Mostra confirmação
     printf("\nPedido registrado com sucesso!\n");
     printf("Cliente: %s\n", p->nome_cliente);
     printf("Item: %s | Quantidade: %d | Total: R$ %.2f\n", novo.nome, qtd, p->total_pedido);

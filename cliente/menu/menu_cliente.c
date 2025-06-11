@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
 #include "../func/menu.h"
+#include "../func/funcoes.h"
 
 int main () 
 {
@@ -28,6 +31,7 @@ int main ()
             case 4:
                 fazerPedido(&p);
                 break;
+
             case 5:
                 printf("\nSaindo do sistema. Obrigado pela visita.\n");
                 break;
@@ -37,6 +41,8 @@ int main ()
                 break;
         }
         
-    } while (escolha != 5); 
+    } while (escolha != 5); // Continua até o usuário escolher sair (opção 5)
+       
+    return 0;
 
 }
