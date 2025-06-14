@@ -1,6 +1,8 @@
 #include <stdio.h>
-#include "../restaurante/func/func_restaurante.h"
-#include "../cliente/func/funcoes.h"
+#include <stdlib.h>
+
+#include "./restaurante/func/func_restaurante.h"
+#include "./cliente/func/funcoes.h"
 
 int main() {
     int opcao;
@@ -11,14 +13,13 @@ int main() {
     
     while (1) {
        
-
-        printf("\n|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
+        printf("\n|------------------------|\n");
         printf("|   MENU DO CLIENTE [1]  |\n");
         printf("|........................|\n");
-        printf("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
+        printf("|------------------------|\n");
         printf("|  MENU PROPRIETARIO [2] |\n");
         printf("|........................|\n");
-        printf("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
+        printf("|------------------------|\n");
         printf("|   FINALIZAR SECAO [3]  |\n");
         printf("|........................|\n");
         
@@ -39,16 +40,16 @@ int main() {
                 break;
             case 3:
                 system("cls");
-                printf("\n|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
+                printf("\n|------------------------|\n");
                 printf("|    SECAO FINALIZADA    |\n");
                 printf("|........................|\n");
-                printf("|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
+                printf("|------------------------|\n");
                 printf("|     MUITO OBRIGADO!    |\n");
                 printf("|........................|\n");
                 return 0;
             default:
                 system("cls");
-                printf("\n|¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨|\n");
+                printf("\n|------------------------|\n");
                 printf("|    OPCAO INVALIDA!     |\n");
                 printf("|........................|\n");
         }

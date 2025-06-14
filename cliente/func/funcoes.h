@@ -89,3 +89,26 @@ int ler_inteiro_seguro(const char *mensagem, int min, int max);
 // Verifica se string contém apenas letras e espaços (para nomes de itens)
 int validar_nome_item(const char *str);
 
+// ---------- PROTÓTIPOS DE FUNÇÕES DO MENU CLIENTE ---------- (LIZANDRO)
+
+// Mostra o menu de pratos principais
+void mostrarPratosPrincipais(Cardapio *cardapio_ptr, int total_itens);
+
+// Mostra o menu de bebidas
+void mostrarBebidas(Cardapio *cardapio_ptr, int total_itens);
+
+// Mostra o menu de sobremesas
+void mostrarSobremesas(Cardapio *cardapio_ptr, int total_itens);
+
+// Mostra o menu principal e retorna a opção escolhida
+int mostrarMenu(void);
+
+// Faz um pedido e preenche a estrutura
+void fazerPedido(struct dados_pedido **pedidos_ptr,
+int *total_pedidos_ptr, int *capacidade_ptr, Cardapio *cardapio_menu, int total_itens_cardapio);
+
+// Pausa a tela até que o usuário aperte ENTER
+void pausarTela(void);
+
+// Mostra o menu do cliente e executa as opções
+int menu_cliente(void);
