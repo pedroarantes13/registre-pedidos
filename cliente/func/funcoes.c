@@ -1,3 +1,10 @@
+/*Arquivo com a implementação das funções envolvendo a manipulação de dados dos pedidos do restaurante. Incluindo: 
+    1) Registro dos pedidos da mesa
+    2) Cálculo do total da mesa
+    3) Persistência desses dados no arquivo binário
+    4) Geração do relatório final, com métricas, rankings e total arrecadado
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

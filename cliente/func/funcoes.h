@@ -1,8 +1,14 @@
+/* Arquivo com os protótipos das funções envolvendo a captura de dados dos pedidos (funções relacionadas ao menu do cliente) e a manipulação desses dados e sua persistência na memória.
+*/
+
 #pragma once
 #include "../../restaurante/func/func_restaurante.h"
 
 #define ARQUIVO_BINARIO "pedidos.bin"
 #define MAX_CUPONS 5
+
+
+// ---------- PROTÓTIPOS DE FUNÇÕES DE MANIPULAÇÃO DE DADOS DOS PEDIDOS---------- (DANIEL)
 
 // ---------- ESTRUTURAS ----------
 
