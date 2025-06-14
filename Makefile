@@ -1,47 +1,49 @@
 CC = gcc
 CFLAGS = -Wall -g
-TARGET = programa
+TARGET = menu# Nome do programa final
 
+# Diretórios base
+CLIENTE_DIR = cliente
+CLIENTE_MENU_DIR = $(CLIENTE_DIR)/menu
+CLIENTE_FUNC_DIR = $(CLIENTE_DIR)/func
+RESTAURANTE_DIR = restaurante
+RESTAURANTE_FUNC_DIR = $(RESTAURANTE_DIR)/func
+
+# Diretórios onde o compilador deve procurar pelos arquivos .h (cabeçalhos)
+INCLUDE_DIRS = -I$(CLIENTE_MENU_DIR) \
+               -I$(CLIENTE_FUNC_DIR) \
+               -I$(RESTAURANTE_FUNC_DIR)
+
+# Adiciona os diretórios de inclusão aos CFLAGS
+CFLAGS += $(INCLUDE_DIRS)
+
+# Arquivos fonte (TODOS os .c do seu projeto que precisam ser compilados)
 SRCS = \
-	cliente/menu/menu_cliente.c \
-	cliente/func/menu_funcoes.c \
-	cliente/func/funcoes.c
+    $(CLIENTE_MENU_DIR)/menu_cliente.c \
+    $(CLIENTE_FUNC_DIR)/menu_funcoes.c \
+    $(CLIENTE_FUNC_DIR)/funcoes.c \
+    $(RESTAURANTE_FUNC_DIR)/func_restaurante.c
 
-OBJS = $(SRCS:.c=.o)
+# Arquivos objeto (os .o que serão gerados a partir dos .c)
+OBJS = $(patsubst %.c,%.o,$(SRCS))
 
-all: $(TARGET)
+# Regra principal: compilar o executável
+all: $(TARGET).exe
 
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET).exe $(CFLAGS) # Adicionado .exe aqui
+$(TARGET).exe: $(OBJS)
+	@echo "Linking $(TARGET).exe..."
+	$(CC) $(OBJS) -o $(TARGET).exe
+	@echo "Build complete."
 
+# Regra para compilar arquivos .c em .o
 %.o: %.c
-	$(CC) -c $< -o $@ $(CFLAGS)
+	@echo "Compiling $<..."
+	$(CC) $(CFLAGS) -c $< -o $@
+	@echo "Compiled $<"
 
+# Regra para limpar o projeto (remove todos os .o e o executável)
+.PHONY: clean
 clean:
-	@echo Cleaning up...
-	-del $(subst /,\\,$(OBJS)) 2>NUL # Usa del para .o, e converte barras
-	-del $(TARGET).exe 2>NUL       # Usa del para o executável .exe
-	@echo Done.CC = gcc
-CFLAGS = -Wall -g
-TARGET = programa
-
-SRCS = \
-	cliente/menu/menu_cliente.c \
-	cliente/func/menu_funcoes.c \
-	cliente/func/funcoes.c
-
-OBJS = $(SRCS:.c=.o)
-
-all: $(TARGET)
-
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET).exe $(CFLAGS) # Adicionado .exe aqui
-
-%.o: %.c
-	$(CC) -c $< -o $@ $(CFLAGS)
-
-clean:
-	@echo Cleaning up...
-	-del $(subst /,\\,$(OBJS)) 2>NUL # Usa del para .o, e converte barras
-	-del $(TARGET).exe 2>NUL       # Usa del para o executável .exe
-	@echo Done.
+	@echo "Cleaning up..."
+	-rm $(OBJS) $(TARGET).exe 2>/dev/null || del $(subst /,\\,$(OBJS)) $(TARGET).exe 2>NUL || true
+	@echo "Clean complete."

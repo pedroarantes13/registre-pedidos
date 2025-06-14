@@ -4,6 +4,7 @@
 #include "../func/func_restaurante.h"
 #include "../../cliente/func/funcoes.h"
 
+
 void adicionarItem(Cardapio *item) {
 
     printf(" __________________________________\n");

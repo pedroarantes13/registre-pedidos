@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#pragma pack(1)
 // Instruções para o compilador para as funções de truncar o arquivo
 // Faz a interoperabilidade entre sistemas operacionais Windows e POSIX (Linux)
 // Dependendo do sistema operacional, define a função ftruncate corretamente
@@ -52,7 +53,7 @@ int adicionar_item(Cardapio item) {
 // Função para carregar todo o cardapio para a memoria em um array de itens do tipo Cardapio (passagem por referencia)
 // Retorna 1 se bem sucedido, caso contrário retorna 0
 
-int carregar_cardapio(char *filename, Cardapio **cardapio) {
+int carregar_cardapio(char *filename, Cardapio **cardapio, int *num_items_ptr) {
 
   // Inicia o array de cardapio como NULL
   *cardapio = NULL;
@@ -106,6 +107,10 @@ int carregar_cardapio(char *filename, Cardapio **cardapio) {
 
   fclose(fptr);
 
+
+    if (num_items_ptr != NULL) {
+        *num_items_ptr = cont; // Atualiza o valor de total_itens_cardapio na main!
+    }
   return 0;
 }
 
@@ -307,3 +312,5 @@ int verificar_indice_cardapio(char *filename, int indice) {
 
   return 0;
 }
+
+#pragma pack()
