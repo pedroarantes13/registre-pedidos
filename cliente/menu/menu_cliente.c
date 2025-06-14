@@ -1,5 +1,3 @@
-#pragma pack(1)
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -18,18 +16,22 @@ int main ()
 
     // Carrega o cardápio
     Cardapio *cardapio = NULL;
-    int total_itens_cardapio = 0;
+    int contador_itens_cardapio = 0;
 
-    if (carregar_cardapio(STD_BIN, &cardapio, &total_itens_cardapio) != 0) {
+   if (carregar_cardapio(STD_BIN, &cardapio) != 0) {
     printf("Erro ao carregar o cardápio.\n");
-    return 1;
+    // Libera cardapio se algo foi alocado antes do erro
+    if (cardapio != NULL) {
+        free(cardapio);
+        cardapio = NULL;
     }
+    return 1;
+}
 
-    if (cardapio == NULL && total_itens_cardapio == 0) {
-    printf("Cardápio está vazio ou houve um problema na alocacao/leitura.\n");
+    contador_itens_cardapio = total_itens_cardapio(STD_BIN);
 
     // Carrega os pedidos salvos 
-    carregar_pedidos(&pedidos, &total_pedidos, &capacidade);}
+    carregar_pedidos(&pedidos, &total_pedidos, &capacidade);
 
     do {
 
@@ -38,19 +40,19 @@ int main ()
         switch (escolha)  /* Switch para exibir o cardapio conforme a escolha do menu */
         {
             case 1:
-                mostrarPratosPrincipais(cardapio, total_itens_cardapio);
+                mostrarPratosPrincipais(cardapio, contador_itens_cardapio);
                 pausarTela();
                 break;
             case 2:
-                mostrarBebidas(cardapio, total_itens_cardapio);
+                mostrarBebidas(cardapio, contador_itens_cardapio);
                 pausarTela();
                 break;
             case 3:
-                mostrarSobremesas(cardapio, total_itens_cardapio);
+                mostrarSobremesas(cardapio, contador_itens_cardapio);
                 pausarTela();
                 break;
             case 4:
-                fazerPedido(&pedidos, &total_pedidos, &capacidade, cardapio, total_itens_cardapio);
+                fazerPedido(&pedidos, &total_pedidos, &capacidade, cardapio, contador_itens_cardapio);
                 pausarTela();
                 break;
 
@@ -68,10 +70,9 @@ int main ()
        
     // Libera memória alocada
     free(pedidos);
+    if (cardapio != NULL) {
     free(cardapio);
+   }
 
     return 0;
-
 }
-
-#pragma pack()

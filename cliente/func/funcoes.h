@@ -1,5 +1,4 @@
 #pragma once
-#pragma pack(1)
 #include "../../restaurante/func/func_restaurante.h"
 
 #define ARQUIVO_BINARIO "pedidos.bin"
@@ -90,4 +89,3 @@ int ler_inteiro_seguro(const char *mensagem, int min, int max);
 // Verifica se string contém apenas letras e espaços (para nomes de itens)
 int validar_nome_item(const char *str);
 
-#pragma pack()

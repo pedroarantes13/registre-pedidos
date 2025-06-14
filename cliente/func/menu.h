@@ -1,6 +1,7 @@
 #pragma once // Garante que o arquivo será incluído apenas uma vez
 
 #define MENU_H
+#define TAM_NOME 50 // Tamanho máximo para nome do cliente
 
 #include <stdio.h>
 #include <string.h>
@@ -10,8 +11,6 @@
 
 #include "funcoes.h"
 #include "../../restaurante/func/func_restaurante.h"
-
-#define TAM_NOME 50 // Tamanho máximo para nome do cliente
 
 // Mostra o menu de pratos principais
 void mostrarPratosPrincipais(Cardapio *cardapio_ptr, int total_itens);
