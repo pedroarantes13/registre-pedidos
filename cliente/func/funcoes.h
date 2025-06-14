@@ -1,4 +1,6 @@
 #pragma once
+#pragma pack(1)
+#include "../../restaurante/func/func_restaurante.h"
 
 #define ARQUIVO_BINARIO "pedidos.bin"
 #define MAX_CUPONS 5
@@ -16,7 +18,7 @@ struct dados_pedido {
     int mesa;
     int pessoas;
     char item[50];
-    int tipo; // 1 = comida, 2 = bebida
+    int tipo; // 0 = comida, 1 = bebida, 2 = sobremesa
     int quantidade;
     float subtotal;
     float valor_individual;
@@ -27,16 +29,27 @@ struct dados_pedido {
 // ---------- FUNÇÕES PRINCIPAIS DO SISTEMA ----------
 
 // Registra um pedido no vetor e salva no arquivo binário
-void registrar_e_salvar(struct dados_pedido*, int*, int, int, char[], int, int, const char*, float);
+void registrar_e_salvar(
+    struct dados_pedido **vetor,       // ponteiro duplo
+    int *total_pedidos,
+    int *capacidade,
+    int mesa,
+    int pessoas,
+    int posicao_item,
+    Cardapio *cardapio,
+    int total_itens_cardapio,
+    int quantidade,
+    const char *cupom,
+    float desconto);
+
+
+Cardapio* buscar_item_cardapio(int posicao, Cardapio *cardapio, int total_itens);
 
 // Carrega pedidos do arquivo binário para vetor alocado dinamicamente
 int carregar_pedidos(struct dados_pedido **vetor, int *total_pedidos, int *capacidade);
 
 // Exibe visualmente um pedido formatado
 void exibir_pedido(struct dados_pedido p, int eh_relatorio);
-
-// Mostra resumo de todos os pedidos realizados
-void exibir_resumo(struct dados_pedido pedidos[], int num_pedidos);
 
 // Gera o relatório final com totais e ranking de vendas
 void gerar_relatorio_final();
@@ -76,3 +89,5 @@ int ler_inteiro_seguro(const char *mensagem, int min, int max);
 
 // Verifica se string contém apenas letras e espaços (para nomes de itens)
 int validar_nome_item(const char *str);
+
+#pragma pack()
