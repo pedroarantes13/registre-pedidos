@@ -44,7 +44,7 @@ void mostrarBebidas(Cardapio *cardapio_ptr, int total_itens)
     printf("|------|--------------------------------|--------------|\n");
 
     int encontrado = 0;
-    int id_exibicao = 1;
+    int id_exibicao = 2;
     for (int i = 0; i < total_itens; i++) {
         if (cardapio_ptr[i].tipo == 1) { 
             printf("| %-4d | %-30s | R$ %-9.2f |\n",
@@ -68,7 +68,7 @@ void mostrarSobremesas(Cardapio *cardapio_ptr, int total_itens)
     printf("|------|--------------------------------|--------------|\n");
 
     int encontrado = 0;
-    int id_exibicao = 1;
+    int id_exibicao = 3;
     for (int i = 0; i < total_itens; i++) {
         if (cardapio_ptr[i].tipo == 2) { 
             printf("| %-4d | %-30s | R$ %-9.2f |\n",
@@ -233,7 +233,7 @@ void fazerPedido(struct dados_pedido **pedidos_ptr, int *total_pedidos_ptr, int 
             capacidade_ptr,
             mesa,
             pessoas,
-            posicao_item_no_cardapio,
+            item_id_escolhido,
             cardapio_menu,
             total_itens_cardapio,
             quantidade_item,
