@@ -1,51 +1,223 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../func/func_restaurante.h"
+#include "../../cliente/func/funcoes.h"
 
-int avaliarsenha(int senha){ //funcao para avaliar a senha, utilizei para deixar o codigo mais limpo
-    int tentativa;
-    do {
-        printf("Digite a senha: ");
-        scanf("%d", &tentativa);
 
-        if(tentativa != senha)
-        printf("Senha incorreta. tente novamente\n");
-    } while(tentativa != senha);
-        
-    return 1;
-}
+void adicionarItem(Cardapio *item) {
 
-int main(){
+    printf(" __________________________________\n");
+    printf("| DIGITE O NOME DO ITEM:           |\n");
+    printf("| >                                |\r| > ");
 
-int n1, n2;
+    while (getchar() != '\n' && !feof(stdin)); // limpa o buffer do teclado
 
-  printf("Olá, seja bem vindo(a)\n");
-  printf("Voce e:\n1 - Cliente\n2 - Funcionario\nPara a opcao desejada, digite o numero correspondente: ");
-  scanf("%d", &n1);
-    if (n1 == 1){
-        printf("Seja bem vindo cliente!");
-    } else if (n1 == 2){
-            int senha = 321;
-            avaliarsenha(senha); // Nesse momento chamo a funcao para avaliar a senha
-            printf("1 - Visualizar cardapio\n2 - Gerar Relatorio\n");
-            scanf("%d", &n2);
+    fgets(item->item, 50, stdin);
+    item->item[strcspn(item->item, "\n")] = '\0'; // remove o '\n'
+    printf("|----------------------------------|\n");
+    printf("| DIGITE O TIPO: 0 = PRATO         |\n");
+    printf("|                1 = BEBIDA        |\n");
+    printf("|                2 = SOBREMESA     |\n");
+    printf("| >                                |\r| > ");
+    scanf("%d", &item->tipo);
 
-            if (n2 == 1){
-                printf("'''Arquivo binario'''\n"); // Aqui entrara no arquivo binario do cardapio
+    printf("|----------------------------------|\n");
+    printf("| DIGITE O VALOR:                  |\n");
+    printf("| >                                |\r| > ");
+    scanf("%f", &item->valor);
 
-            } else if (n2 == 2){
-                int n3;
-                printf("1 - Gerar relatorio\n2 - Sair\n");
-                scanf("%d", &n3);
+    while (getchar() != '\n' && !feof(stdin)); // limpa o buffer
 
-                if (n3 == 1){
-                    printf("Gerarando relatorio..."); // Funcao gerar relatorio
-
-              } else {
-                printf("Funcao encerrada"); // Encerra o programa
-              }
-            }
-         } else {
-        printf("Comando invalido!\nTente novamente."); //Caso o numero digitado seja diferente de 1 e 2
+    // Chamada correta com verificação feita por dentro
+    if (adicionar_item(*item) == 0) {
+        printf("| ITEM ADICIONADO COM SUCESSO!     |\n");
+    } else {
+        printf("| ERRO AO ADICIONAR ITEM!          |\n");
     }
-return 0;
+
+    printf(" _________________________________\n");
 }
 
+void menu_editar_item(Cardapio *novo_item) {
+
+    int indice;
+
+    do {
+        printf(" _______________________________________________\n");
+        printf("| DIGITE O INDICE DO ITEM A SER EDITADO:       |\n");
+        printf("| >                                            |\r| > ");
+        scanf("%d", &(indice));
+        indice--; // Ajusta o índice para começar de 0
+
+    } while (verificar_indice_cardapio(STD_BIN, indice) != 0); // Verifica se o índice é válido
+    // Se o índice for inválido, solicita novamente o índice
+
+    printf(" _______________________________________\n");
+    printf("| DIGITE O NOME DO NOVO ITEM:           |\n");
+    printf("| >                                     |\r| > ");
+
+    while (getchar() != '\n' && !feof(stdin)); // limpa o buffer do teclado
+
+    fgets(novo_item->item, 50, stdin);
+    novo_item->item[strcspn(novo_item->item, "\n")] = '\0'; // remove o '\n'
+    printf("|----------------------------------|\n");
+    printf("| DIGITE O TIPO: 0 = PRATO         |\n");
+    printf("|                1 = BEBIDA        |\n");
+    printf("|                2 = SOBREMESA     |\n");
+    printf("| >                                |\r| > ");
+    scanf("%d", &novo_item->tipo);
+
+    printf("|----------------------------------|\n");
+    printf("| DIGITE O VALOR:                  |\n");
+    printf("| >                                |\r| > ");
+    scanf("%f", &novo_item->valor);
+
+    while (getchar() != '\n' && !feof(stdin)); // limpa o buffer
+
+    if (editar_item_cardapio(STD_BIN, indice, novo_item) == 0) {
+        printf("| ITEM EDITADO COM SUCESSO!       |\n");
+    } else {
+        printf("| ERRO AO EDITAR ITEM!            |\n");
+    }
+
+    printf(" _________________________________\n");
+}
+
+void menu_excluir_item() {
+
+    int indice;
+
+    do {
+        printf(" _______________________________________________\n");
+        printf("| DIGITE O INDICE DO ITEM A SER EXCLUIDO:      |\n");
+        printf("| >                                            |\r| > ");
+        scanf("%d", &indice);
+        indice--; // Ajusta o índice para começar de 0
+
+    } while (verificar_indice_cardapio(STD_BIN, indice) != 0); // Verifica se o índice é válido
+    // Se o índice for inválido, solicita novamente o índice
+
+    if (remover_item_cardapio(STD_BIN, indice) == 0) {
+        printf("| ITEM EXCLUIDO COM SUCESSO!                |\n");
+    } else {
+        printf("| ERRO AO EXCLUIR ITEM!                     |\n");
+    }
+
+    printf(" _________________________________\n");
+
+}
+
+
+int menu_restaurante(){ //Funcao inicial do menu restaurante
+
+    int escolha;
+
+    printf("===============================\n");
+    printf(" BEM-VINDO DE VOLTA AO SISTEMA!\n");
+    printf("===============================\n\n");
+
+    while(1){
+
+        printf("|________________________|\n");
+        printf("| VISUALIZAR CARDAPIO [1]|\n");
+        printf("|........................|\n");
+        printf("|________________________|\n");
+        printf("|   ADICIONAR ITEM [2]   |\n");
+        printf("|........................|\n");
+        printf("|________________________|\n");
+        printf("|  EDITAR ITEM CARD.[3]  |\n");
+        printf("|........................|\n");
+        printf("|________________________|\n");
+        printf("|  EXCLUIR ITEM CARD.[4] |\n");
+        printf("|........................|\n");
+        printf("|________________________|\n");
+        printf("|   GERAR RELATORIO [5]  |\n");
+        printf("|........................|\n");
+        printf("|________________________|\n");
+        printf("|   FINALIZAR SECAO [0]  |\n");
+        printf("|........................|\n");
+        printf("          [   ]\b\b\b");
+
+        if (scanf("%d", &escolha) != 1) {
+
+            printf(" __________________\n");
+            printf("| ENTRADA INVÁLIDA!|\n");
+            printf("| TENTE NOVAMENTE! |\n");
+            printf("|------------------|\n");
+
+            while (getchar() != '\n'); // limpa buffer
+            continue;
+
+        }
+
+        switch (escolha) {
+
+            case 1:
+                
+                system("cls"); // Limpa o terminal
+
+                imprimir_cardapio(STD_BIN); //Chamo a funcao do Pedro, para mostrar o cardapio
+
+                break;
+
+            case 2:{
+
+                system("cls");
+
+                Cardapio item;
+
+                adicionarItem(&item); //Adiciona um item no cardapio
+
+                break;
+            }
+                
+            case 3:{
+
+                system("cls");
+
+                Cardapio novo_item;
+
+                menu_editar_item(&novo_item); //Modifica um item do cardapio
+
+                break;
+            }
+
+            case 4:{
+
+                system("cls");
+
+                menu_excluir_item(); //Remove um item do cardapio
+
+                break;
+
+            }
+
+
+            case 5:
+
+                system("cls");
+
+                gerar_relatorio_final(); // Chamo a funcao do Daniel, onde vai gerar o relatorio
+
+                break;
+
+            case 0:
+
+                system("cls");
+
+                printf("  =================================\n");
+                printf("  ==SECAO FINALIZADA COM SUCESSO!==\n"); //Finaliza a secao
+                printf("  =================================\n\n");
+
+                return 1;
+
+            default:
+
+                system("cls");
+
+                printf("\n  [COMANDO INVALIDO!]\n   [TENTE NOVAMENTE]\n"); //Entra em loop ate que se digite um comando valido
+        }
+    }
+}
+ 
