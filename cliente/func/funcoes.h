@@ -97,7 +97,7 @@ int validar_nome_item(const char *str);
 
 // ---------- PROTÓTIPOS DE FUNÇÕES DO MENU CLIENTE ---------- (LIZANDRO)
 
-// Mostra o menu de pratos principais
+// Mostra os pratos principais do cardápio
 void mostrarPratosPrincipais(Cardapio *cardapio_ptr, int total_itens);
 
 // Mostra o menu de bebidas
@@ -106,15 +106,15 @@ void mostrarBebidas(Cardapio *cardapio_ptr, int total_itens);
 // Mostra o menu de sobremesas
 void mostrarSobremesas(Cardapio *cardapio_ptr, int total_itens);
 
-// Mostra o menu principal e retorna a opção escolhida
+// Mostra o menu principal do cliente e retorna a opção escolhida
 int mostrarMenu(void);
 
-// Faz um pedido e preenche a estrutura
+// Faz um pedido, solicitando os dados necessários e registrando no vetor de pedidos
 void fazerPedido(struct dados_pedido **pedidos_ptr,
 int *total_pedidos_ptr, int *capacidade_ptr, Cardapio *cardapio_menu, int total_itens_cardapio);
 
 // Pausa a tela até que o usuário aperte ENTER
 void pausarTela(void);
 
-// Mostra o menu do cliente e executa as opções
+// Mostra o menu do cliente e executa as opções escolhidas
 int menu_cliente(void);
