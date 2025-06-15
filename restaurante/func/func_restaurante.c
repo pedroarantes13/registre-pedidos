@@ -2,22 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Instruções para o compilador para as funções de truncar o arquivo
-// Faz a interoperabilidade entre sistemas operacionais Windows e POSIX (Linux)
-// Dependendo do sistema operacional, define a função ftruncate corretamente
-// Se for Windows, usa _chsize_s, caso contrário usa ftruncate
-// A função remover_item_cardapio usa _chsize_s para truncar o arquivo após remover um item
-#ifdef _WIN32
-#include <io.h>
-#define ftruncate _chsize_s
-#else
-#include <unistd.h>
-#define ftruncate ftruncate
-#endif
-
 // Função de registrar um item no cardápio
 // Salva um registro do tipo Cardapio ao final do arquivo binário padrão
-
 int adicionar_item(Cardapio item) {
 
   // Abre o arquivo binário padrão para adicionar ao fim. Se não existe, cria o arquivo "cardapio.bin"
@@ -50,7 +36,7 @@ int adicionar_item(Cardapio item) {
 }
 
 // Função para carregar todo o cardapio para a memoria em um array de itens do tipo Cardapio (passagem por referencia)
-// Retorna 1 se bem sucedido, caso contrário retorna 0
+// Retorna 0 se bem sucedido, caso contrário retorna 1
 
 int carregar_cardapio(char *filename, Cardapio **cardapio) {
 
@@ -233,61 +219,47 @@ int editar_item_cardapio(char *filename, int indice, Cardapio *novo_item) {
 }
 
 // Função para remover um item do cardápio
-// Lê o arquivo binário padrão, remove o item especificado e salva as alterações
-// Move os itens subsequentes para preencher o espaço vazio
+// Carrega o cardápio, remove o item especificado e salva as alterações
+// Recebe o nome do arquivo binário e o índice do item a ser removido
 int remover_item_cardapio(char *filename, int indice) {
 
-  // Abre o arquivo binário para leitura e escrita
-  FILE *fptr = fopen(filename, "r+b");
+  Cardapio *cardapio;
 
-  // Verifica se o arquivo foi aberto corretamente
+  int total = total_itens_cardapio(filename);
+  
+  carregar_cardapio(STD_BIN, &cardapio);
+
+  for (int i = indice; i < total - 1; i++) {
+
+    cardapio[i] = cardapio[i + 1];
+
+  }
+
+  // Abre o arquivo binário para escrita, sobrescrevendo o conteúdo (limpando)
+  FILE *fptr = fopen(filename, "wb");
+
+  // Verifica se o arquivo foi aberto corretamente para limpar o conteúdo
   if (fptr == NULL) {
 
     printf("Falha ao tentar abrir cardapio para remocao.\n");
+
     return 1;
 
   }
-
-  // Move o ponteiro do arquivo para a posição do item a ser removido
-  fseek(fptr, indice * sizeof(Cardapio), SEEK_SET);
-
-  // Lê o item atual para verificar se existe
-  Cardapio item_atual;
-  if (fread(&item_atual, sizeof(Cardapio), 1, fptr) != 1) {
-
-    printf("Item nao encontrado no cardapio.\n");
-    fclose(fptr);
-    return 1;
-
-  }
-
-  // Move o ponteiro do arquivo para a posição do próximo item
-  fseek(fptr, (indice + 1) * sizeof(Cardapio), SEEK_SET);
-
-  // Lê os itens subsequentes e os move para preencher o espaço vazio
-  Cardapio proximo_item;
-  while (fread(&proximo_item, sizeof(Cardapio), 1, fptr) == 1) {
-
-    // Move o ponteiro de volta para a posição do item atual
-    fseek(fptr, (indice * sizeof(Cardapio)), SEEK_SET);
-
-    // Escreve o próximo item na posição do item atual
-    fwrite(&proximo_item, sizeof(Cardapio), 1, fptr);
-
-    // Move o ponteiro para a próxima posição
-    indice++;
-    fseek(fptr, (indice * sizeof(Cardapio)), SEEK_SET);
-    
-    // Incrementa o índice para continuar movendo os itens subsequentes
-  }
-
-  // Trunca o arquivo para remover os itens restantes após o último item movido
-  _chsize_s(fileno(fptr), indice * sizeof(Cardapio));
-
-  // Fecha o arquivo
-  fclose(fptr);
   
-  return 0;
+  // Fecha o arquivo sem fazer alterações (apenas para limpar o conteúdo)
+  fclose(fptr);
+
+  // Reabre o arquivo binário para adicionar os itens restantes
+  for (int i = 0; i < total - 1; i++) {
+
+    adicionar_item(cardapio[i]);
+
+  }
+
+  // Libera a memória alocada para o cardápio
+  free(cardapio);
+
 }
 
 
