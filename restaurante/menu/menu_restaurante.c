@@ -5,7 +5,7 @@
 #include "../../cliente/func/funcoes.h"
 
 
-void adicionarItem(Cardapio *item) {
+void menu_adicionar_item(Cardapio *item) {
 
     printf(" __________________________________\n");
     printf("| DIGITE O NOME DO ITEM:           |\n");
@@ -114,7 +114,7 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
     int escolha;
 
     printf("===============================\n");
-    printf(" BEM-VINDO DE VOLTA AO SISTEMA!\n");
+    printf("      MENU DO RESTAURANTE      \n");
     printf("===============================\n\n");
 
     while(1){
@@ -126,16 +126,16 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
         printf("|   ADICIONAR ITEM [2]   |\n");
         printf("|........................|\n");
         printf("|________________________|\n");
-        printf("|  EDITAR ITEM CARD.[3]  |\n");
+        printf("|  EDITAR ITEM CARD. [3] |\n");
         printf("|........................|\n");
         printf("|________________________|\n");
-        printf("|  EXCLUIR ITEM CARD.[4] |\n");
+        printf("| EXCLUIR ITEM CARD. [4] |\n");
         printf("|........................|\n");
         printf("|________________________|\n");
         printf("|   GERAR RELATORIO [5]  |\n");
         printf("|........................|\n");
         printf("|________________________|\n");
-        printf("|   FINALIZAR SECAO [0]  |\n");
+        printf("|    MENU INICIAL [0]    |\n");
         printf("|........................|\n");
         printf("          [   ]\b\b\b");
 
@@ -167,7 +167,7 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
 
                 Cardapio item;
 
-                adicionarItem(&item); //Adiciona um item no cardapio
+                menu_adicionar_item(&item); //Adiciona um item no cardapio
 
                 break;
             }
@@ -178,6 +178,8 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
 
                 Cardapio novo_item;
 
+                imprimir_cardapio(STD_BIN); //Mostra o cardapio para o usuario
+
                 menu_editar_item(&novo_item); //Modifica um item do cardapio
 
                 break;
@@ -186,6 +188,8 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
             case 4:{
 
                 system("cls");
+
+                imprimir_cardapio(STD_BIN); //Mostra o cardapio para o usuario
 
                 menu_excluir_item(); //Remove um item do cardapio
 
@@ -206,9 +210,7 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
 
                 system("cls");
 
-                printf("  =================================\n");
-                printf("  ==SECAO FINALIZADA COM SUCESSO!==\n"); //Finaliza a secao
-                printf("  =================================\n\n");
+                printf("Retornando ao menu inicial...\n");
 
                 return 1;
 
