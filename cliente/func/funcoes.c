@@ -27,20 +27,20 @@ void top_bottom() {
 /* Inicializa um vetor de cupons de desconto com valores fixos.
  Cada cupom possui um código (string) e uma porcentagem de desconto (float).
 
- Parâmetro:
-   cupons → vetor de structs 'cupom_desconto' com espaço para até MAX_CUPONS.
+    Parâmetro:
+    cupons → vetor de structs 'cupom_desconto' com espaço para até MAX_CUPONS.
 
- Essa função deve ser chamada uma única vez no início do programa.*/
+    Essa função deve ser chamada uma única vez no início do programa.*/
 
-void inicializar_cupons(struct cupom_desconto cupons[]) {
-    // Define os códigos e porcentagens de desconto diretamente.
+    void inicializar_cupons(struct cupom_desconto cupons[]) {
+        // Define os códigos e porcentagens de desconto diretamente.
 
-    strcpy(cupons[0].codigo, "paulo"); cupons[0].porcentagem = 0.20f;    // 20%
-    strcpy(cupons[1].codigo, "daniel"); cupons[1].porcentagem = 0.30f;   // 30%
-    strcpy(cupons[2].codigo, "pedro"); cupons[2].porcentagem = 0.40f;    // 40%
-    strcpy(cupons[3].codigo, "lizandro"); cupons[3].porcentagem = 0.50f; // 50%
-    strcpy(cupons[4].codigo, "gean"); cupons[4].porcentagem = 0.60f;     // 60%
-}
+        strcpy(cupons[0].codigo, "paulo"); cupons[0].porcentagem = 0.20f;    // 20%
+        strcpy(cupons[1].codigo, "daniel"); cupons[1].porcentagem = 0.30f;   // 30%
+        strcpy(cupons[2].codigo, "pedro"); cupons[2].porcentagem = 0.40f;    // 40%
+        strcpy(cupons[3].codigo, "lizandro"); cupons[3].porcentagem = 0.50f; // 50%
+        strcpy(cupons[4].codigo, "gean"); cupons[4].porcentagem = 0.60f;     // 60%
+    }
 
 /* Verifica se um cupom de desconto informado pelo usuário é válido.
  Se for, define a porcentagem de desconto correspondente.

@@ -19,7 +19,7 @@ int menu_cliente() {
     int contador_itens_cardapio = 0; // Contador de itens no cardápio       
 
    if (carregar_cardapio(STD_BIN, &cardapio) != 0) { // Tenta carregar o cardápio do arquivo   
-        printf("Erro ao carregar o cardápio.\n"); // Exibe mensagem de erro se não conseguir carregar o cardápio
+        printf("Nao foi possivel abrir o cardapio. Caso ainda nao tenha cadastrado itens, acesse menu do proprietario para faze-lo.\n"); // Exibe mensagem de erro se não conseguir abrir o cardápio
        
         if (cardapio != NULL) { // Se o cardápio foi alocado, libera a memória        
             free(cardapio); // Libera a memória alocada para o cardápio
@@ -62,8 +62,8 @@ int menu_cliente() {
 
             case 5:
                 // Opção para sair do sistema
-                printf("\nSaindo do sistema. Obrigado pela visita.\n");
-                pausarTela();
+                printf("\nVoltando para o menu inicial...\n");
+                
                 break;
             default:
                 // Caso o usuário escolha uma opção inválida, exibe mensagem de erro
@@ -87,7 +87,7 @@ int menu_cliente() {
 void mostrarPratosPrincipais(Cardapio *cardapio_ptr, int total_itens) 
 
 {
-    printf("\nPRATOS PRINCIPAIS:\n");
+    printf("\nPRATOS:\n");
     printf("----------------------------------------------------------\n"); 
     printf("| %-4s | %-30s | %-12s |\n", "ID", "Item", "Valor (R$)");
     printf("|------|--------------------------------|--------------|\n");
@@ -175,7 +175,7 @@ int mostrarMenu() {
         printf("======================================\n\n");
 
         printf("--------------------------------------\n");
-        printf("| %-34s |\n", "1 - Pratos principais"); //
+        printf("| %-34s |\n", "1 - Pratos"); //
         printf("|....................................|\n");
         printf("--------------------------------------\n");
 
@@ -191,7 +191,7 @@ int mostrarMenu() {
         printf("|....................................|\n");
         printf("--------------------------------------\n");
 
-        printf("| %-34s |\n", "5 - Sair");
+        printf("| %-34s |\n", "5 - Menu inicial");
         printf("--------------------------------------\n\n");
 
         printf("Digite a opcao desejada: ");
