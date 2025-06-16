@@ -12,7 +12,7 @@ int adicionar_item(Cardapio item) {
   // Verifica se o arquivo foi acessado para escrita. Em caso de falha retorna 1
   if (fptr == NULL) {
 
-    printf("Falha ao tentar abrir cardapio para adicionar item.\n");
+    printf("Falha ao tentar abrir cardapio para adicionar item. Caso ainda nao tenha cadastrado itens, acesse menu do proprietario para faze-lo.\n");
 
     return 1;
 
