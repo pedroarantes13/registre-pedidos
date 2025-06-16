@@ -110,8 +110,10 @@ void mostrarSobremesas(Cardapio *cardapio_ptr, int total_itens);
 int mostrarMenu(void);
 
 // Faz um pedido, solicitando os dados necessários e registrando no vetor de pedidos
-void fazerPedido(struct dados_pedido **pedidos_ptr,
-int *total_pedidos_ptr, int *capacidade_ptr, Cardapio *cardapio_menu, int total_itens_cardapio);
+void fazerPedido(struct dados_pedido **pedidos_ptr, int *total_pedidos_ptr, int *capacidade_ptr, Cardapio *cardapio_menu, int total_itens_cardapio,
+                 const struct cupom_desconto cupons_disponiveis[], int num_cupons);
+// Obtém o desconto de um cupom digitado pelo usuário
+float obter_desconto_cupom(const char *cupom_digitado, const struct cupom_desconto cupons[], int num_cupons); 
 
 // Pausa a tela até que o usuário aperte ENTER
 void pausarTela(void);

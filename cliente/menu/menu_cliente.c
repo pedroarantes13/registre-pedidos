@@ -12,13 +12,16 @@ int menu_cliente() {
     struct dados_pedido *pedidos = NULL; // Ponteiro para armazenar os pedidos feitos pelo cliente    
     int total_pedidos = 0; // Total de pedidos feitos     
     int capacidade = 0; // Capacidade do vetor de pedidos, para evitar realocações frequentes
-
+    
+    struct cupom_desconto cupons_disponiveis[MAX_CUPONS]; // Array de cupons de desconto disponíveis
+    inicializar_cupons(cupons_disponiveis); // Inicializa os cupons disponíveis com códigos e porcentagens fixas
+    
     // Carrega o cardápio
 
     Cardapio *cardapio = NULL;  // Ponteiro para armazenar o cardápio
     int contador_itens_cardapio = 0; // Contador de itens no cardápio       
 
-   if (carregar_cardapio(STD_BIN, &cardapio) != 0) { // Tenta carregar o cardápio do arquivo   
+    if (carregar_cardapio(STD_BIN, &cardapio) != 0) { // Tenta carregar o cardápio do arquivo   
         printf("Nao foi possivel abrir o cardapio. Caso ainda nao tenha cadastrado itens, acesse menu do proprietario para faze-lo.\n"); // Exibe mensagem de erro se não conseguir abrir o cardápio
        
         if (cardapio != NULL) { // Se o cardápio foi alocado, libera a memória        
@@ -57,7 +60,7 @@ int menu_cliente() {
                 break;
             case 4:
                 // Chama a função para fazer um pedido, passando os ponteiros necessários
-                fazerPedido(&pedidos, &total_pedidos, &capacidade, cardapio, contador_itens_cardapio);
+                fazerPedido(&pedidos, &total_pedidos, &capacidade, cardapio, contador_itens_cardapio, cupons_disponiveis, MAX_CUPONS);
                 break;
 
             case 5:
@@ -103,7 +106,7 @@ void mostrarPratosPrincipais(Cardapio *cardapio_ptr, int total_itens)
         }
     }
     if (!encontrado) { // Se nenhum prato foi encontrado, exibe mensagem    
-        printf("|                                NENHUM PRATO ENCONTRADO                                 |\n");
+        printf("|              NENHUM PRATO ENCONTRADO                                 |\n");
     }
     printf("----------------------------------------------------------\n");
 
@@ -128,7 +131,7 @@ void mostrarBebidas(Cardapio *cardapio_ptr, int total_itens)
         }
     }
     if (!encontrado) {
-        printf("|                                NENHUMA BEBIDA ENCONTRADA                               |\n");
+         printf("|              NENHUMA BEBIDA ENCONTRADA                               |\n");
     }
     printf("----------------------------------------------------------\n");
 }
@@ -152,7 +155,7 @@ void mostrarSobremesas(Cardapio *cardapio_ptr, int total_itens)
         }
     }
     if (!encontrado) {
-        printf("|                              NENHUMA SOBREMESA ENCONTRADA                              |\n");
+         printf("|              NENHUMA SOBREMESA ENCONTRADA                              |\n");
     }
     printf("----------------------------------------------------------\n");
  
@@ -204,9 +207,18 @@ int mostrarMenu() {
 
     return escolha; // Retorna a escolha do usuário
 }
-  
+  // Implementação da função para obter o desconto de um cupom
+float obter_desconto_cupom(const char *cupom_digitado, const struct cupom_desconto cupons[], int num_cupons) {
+    for (int i = 0; i < num_cupons; i++) { // Percorre todos os cupons disponíveis
+        if (strcmp(cupom_digitado, cupons[i].codigo) == 0) { // Compara o cupom digitado com o código do cupom atual        
+            return cupons[i].porcentagem; // Retorna a porcentagem de desconto encontrada
+        }
+    }
+    return 0.0; // Retorna 0.0 se o cupom não for encontrado
+}
     // Função para fazer um pedido, recebe ponteiros para cada parametro necessário
-void fazerPedido(struct dados_pedido **pedidos_ptr, int *total_pedidos_ptr, int *capacidade_ptr, Cardapio *cardapio_menu, int total_itens_cardapio) {
+void fazerPedido(struct dados_pedido **pedidos_ptr, int *total_pedidos_ptr, int *capacidade_ptr, Cardapio *cardapio_menu, int total_itens_cardapio,
+                 const struct cupom_desconto cupons_disponiveis[], int num_cupons) {
     int mesa; // Variável para armazenar o número da mesa
     int pessoas; // Variável para armazenar o número de pessoas na mesa
     char cupom_str[20] = ""; // String para armazenar o cupom de desconto
@@ -233,22 +245,29 @@ void fazerPedido(struct dados_pedido **pedidos_ptr, int *total_pedidos_ptr, int 
     scanf(" %c", &tem_cupom); // Lê a resposta do cliente
     while (getchar() != '\n'); // Limpa o buffer de entrada
 
-    if (tem_cupom == 's' || tem_cupom == 'S') { // Se o cliente tem cupom de desconto
-        printf("Digite o cupom: ");
-        fgets(cupom_str, sizeof(cupom_str), stdin); // Lê o cupom do cliente
-        cupom_str[strcspn(cupom_str, "\n")] = 0; // Remove o caractere de nova linha do final da string
+    if (tem_cupom == 's' || tem_cupom == 'S') {
+        printf("Digite o cupom: "); // Solicita ao cliente que digite o cupom de desconto
+        fgets(cupom_str, sizeof(cupom_str), stdin);
+        cupom_str[strcspn(cupom_str, "\n")] = 0; // Remove a quebra de linha.
 
-        if (strlen(cupom_str) > 0) { // Se o cupom não estiver vazio
-            desconto_val = 0.10; // Define um desconto fixo de 10% para simplificação   
-            printf("Cupom '%s' aplicado! %.0f%% de desconto.\n", cupom_str, desconto_val * 100); //
-        } else { // Se o cupom estiver vazio
+        if (strlen(cupom_str) > 0) { // Se o usuário digitou algo
+            desconto_val = obter_desconto_cupom(cupom_str, cupons_disponiveis, num_cupons);
+
+            if (desconto_val > 0.0) { // Se a função retornou um desconto válido.
+                printf("Cupom '%s' aplicado! %.0f%% de desconto.\n", cupom_str, desconto_val * 100);
+            } else { // Se o cupom é inválido.
+                printf("Cupom '%s' invalido ou expirado. Nenhum desconto aplicado.\n", cupom_str);
+                strcpy(cupom_str, ""); // Limpa o cupom_str para não persistir um inválido.
+                desconto_val = 0.0;    // Garante que o desconto seja 0.
+            }
+        } else { // Se o usuário disse 's' mas não digitou nada.
             printf("Cupom vazio. Nenhum desconto aplicado.\n");
-            strcpy(cupom_str, "");  // Limpa a string do cupom
-            desconto_val = 0.0; // Define o desconto como 0          
+            strcpy(cupom_str, "");
+            desconto_val = 0.0;
         }
-    } else { // Se o cliente não tem cupom de desconto           
+    } else { // Se o cliente não possui cupom.
         strcpy(cupom_str, "");
-        desconto_val = 0.0; // Define o desconto como 0
+        desconto_val = 0.0;
     }
 
     char adicionar_mais_itens = 's'; // Variável para controlar se o cliente deseja adicionar mais itens ao pedido
