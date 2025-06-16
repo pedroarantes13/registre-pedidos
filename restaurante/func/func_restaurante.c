@@ -260,6 +260,8 @@ int remover_item_cardapio(char *filename, int indice) {
   // Libera a memória alocada para o cardápio
   free(cardapio);
 
+  return 0;
+
 }
 
 
@@ -279,3 +281,27 @@ int verificar_indice_cardapio(char *filename, int indice) {
 
   return 0;
 }
+
+int validar_tipo(int tipo) {
+
+  // Verifica se o tipo é válido (0, 1 ou 2)
+  if (tipo < 0 || tipo > 2) {
+    printf("Tipo invalido. Deve ser 0 (Prato), 1 (Bebida) ou 2 (Sobremesa).\n");
+    return 1;
+  }
+
+  return 0;
+}
+
+// Função para validar se o valor do item é um real positivo
+int validar_valor(float valor) {
+
+  // Verifica se o valor é positivo
+  if (valor < 0) {
+    printf("Valor invalido. Deve ser um numero positivo.\n");
+    return 1;
+  }
+
+  return 0;
+}
+

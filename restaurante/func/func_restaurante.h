@@ -40,6 +40,10 @@ int remover_item_cardapio(char *filename, int indice);
 // Verifica se um índice é válido para o cardápio
 int verificar_indice_cardapio(char *filename, int indice);
 
+int validar_tipo(int tipo); // Verifica se o tipo é válido (0, 1 ou 2)
+
+int validar_valor(float valor); // Verifica se o valor é positivo
+
 //------------- PROTÓTIPOS DAS FUNÇÕES DE MENUS E INTERAÇÕES COM O USUÁRIO ------------ (GEAN)
 
 // Exibe o cardápio e permite ao usuário escolher um item
