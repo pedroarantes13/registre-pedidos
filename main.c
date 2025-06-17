@@ -29,18 +29,18 @@ int main() {
 
         switch (opcao) {
             case 1:
-                system("cls");
+                system("clear || cls");
                 menu_cliente(); // Chamada para a função referente ao menu do cliente
                 while (getchar() != '\n' && !feof(stdin)); // Limpa o buffer após retornar do menu
                 break;
             case 2:
-                system("cls");
+                system("clear || cls");
                 menu_restaurante(); // Chamada para a função referente ao menu do cliente
                 while (getchar() != '\n' && !feof(stdin)); // Limpa o buffer após retornar do menu
                 break;
             case 3:
                 // Após o usuário finalizar, encerra o programa
-                system("cls");
+                system("clear || cls");
                 printf("\n|------------------------|\n");
                 printf("|    SECAO FINALIZADA    |\n");
                 printf("|........................|\n");
