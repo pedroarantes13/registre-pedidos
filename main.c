@@ -23,10 +23,8 @@ int main() {
         printf("|   FINALIZAR SECAO [3]  |\n");
         printf("|........................|\n");
         
-    
+        while (getchar() != '\n' && !feof(stdin)); // limpa qualquer resíduo antes da leitura
 
-        printf("\nDigite sua opcao: ");
-        printf("[ ]\b\b\b"); 
         opcao = ler_inteiro_seguro("", 1, 3); // Valores entre 1 e 3
 
         switch (opcao) {
@@ -47,6 +45,11 @@ int main() {
                 printf("|     MUITO OBRIGADO!    |\n");
                 printf("|........................|\n");
                 return 0;
+            default:
+                system("cls");
+                printf("\n|------------------------|\n");
+                printf("|    OPCAO INVALIDA!     |\n");
+                printf("|........................|\n");
         }
     }
 
