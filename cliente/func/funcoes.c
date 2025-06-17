@@ -81,6 +81,7 @@ int ler_inteiro_seguro(const char *mensagem, int min, int max) {
         // Exibe a mensagem (ex: "Digite sua opcao:")
         printf("%s\n", mensagem);
         printf("[   ]\b\b\b"); // Cursor centralizado no colchete
+        fflush(stdout);
         
         if (!fgets(entrada, sizeof(entrada), stdin)) {
             clearerr(stdin); // Limpa erro, se houver
@@ -91,13 +92,13 @@ int ler_inteiro_seguro(const char *mensagem, int min, int max) {
 
         if (sscanf(entrada, "%d", &valor) != 1) {
             printf("\n| ERRO: DIGITE UM NUMERO INTEIRO VALIDO! |\n");
-            printf("| TENTE NOVAMENTE:                        |\n");
+            printf("| TENTE NOVAMENTE:                       |\n");
             continue;
         }
 
         if (valor < min || valor > max) {
             printf("\n| ERRO: VALOR DEVE ESTAR ENTRE %d E %d! |\n", min, max);
-            printf("| TENTE NOVAMENTE:                      |\n");
+            printf("| TENTE NOVAMENTE:                    |\n");
             continue;
         }
 
