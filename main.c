@@ -1,3 +1,5 @@
+/*Arquivo main.c contendo o menu principal, com as chamadas das funções referentes ao menu do cliente e ao menu do restaurante*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -5,7 +7,7 @@
 #include "./cliente/func/funcoes.h"
 
 int main() {
-    int opcao;
+    int opcao; // Escolha do usuário sobre a próxima ação do programa
 
     printf("\n==========================\n");
     printf("   BEM-VINDO AO SISTEMA!   \n");
@@ -23,20 +25,21 @@ int main() {
         printf("|   FINALIZAR SECAO [3]  |\n");
         printf("|........................|\n");
         
-        while (getchar() != '\n' && !feof(stdin)); // limpa qualquer resíduo antes da leitura
-
-        opcao = ler_inteiro_seguro("", 1, 3); // Valores entre 1 e 3
+        opcao = ler_inteiro_seguro("Digite sua opcao ", 1, 3); // Função de validação de números inteiros (1 a 3)
 
         switch (opcao) {
             case 1:
                 system("cls");
-                menu_cliente();
+                menu_cliente(); // Chamada para a função referente ao menu do cliente
+                while (getchar() != '\n' && !feof(stdin)); // Limpa o buffer após retornar do menu
                 break;
             case 2:
                 system("cls");
-                menu_restaurante();
+                menu_restaurante(); // Chamada para a função referente ao menu do cliente
+                while (getchar() != '\n' && !feof(stdin)); // Limpa o buffer após retornar do menu
                 break;
             case 3:
+                // Após o usuário finalizar, encerra o programa
                 system("cls");
                 printf("\n|------------------------|\n");
                 printf("|    SECAO FINALIZADA    |\n");
@@ -45,11 +48,8 @@ int main() {
                 printf("|     MUITO OBRIGADO!    |\n");
                 printf("|........................|\n");
                 return 0;
-            default:
-                system("cls");
-                printf("\n|------------------------|\n");
-                printf("|    OPCAO INVALIDA!     |\n");
-                printf("|........................|\n");
+
+                // obs.: default retirado devido à função de validação de números inteiros
         }
     }
 

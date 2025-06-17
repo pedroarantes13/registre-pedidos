@@ -275,7 +275,8 @@ int verificar_indice_cardapio(char *filename, int indice) {
 
   // Verifica se o índice está dentro do intervalo válido
   if (indice < 0 || indice >= total_itens) {
-    printf("Indice invalido. Deve ser entre 1 e %d.\n", total_itens);
+    printf("|----------------------------------------|\n");
+    printf("| INDICE INVALIDO! DEVE SER ENTRE 1 E %d! |\n", total_itens);
     return 1;
   }
 
@@ -286,7 +287,8 @@ int validar_tipo(int tipo) {
 
   // Verifica se o tipo é válido (0, 1 ou 2)
   if (tipo < 0 || tipo > 2) {
-    printf("Tipo invalido. Deve ser 0 (Prato), 1 (Bebida) ou 2 (Sobremesa).\n");
+    printf("|----------------------------------------|\n");
+    printf("| TIPO INVALIDO! APENAS 0, 1 OU 2!       |\n");
     return 1;
   }
 
@@ -298,7 +300,8 @@ int validar_valor(float valor) {
 
   // Verifica se o valor é positivo
   if (valor < 0) {
-    printf("Valor invalido. Deve ser um numero positivo.\n");
+    printf("|----------------------------------------|\n");
+    printf("|VALOR INVALIDO! DEVE SER POSITIVO!      |\n");
     return 1;
   }
 
