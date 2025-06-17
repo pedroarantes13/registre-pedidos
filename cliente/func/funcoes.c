@@ -73,46 +73,38 @@ int aplicar_cupom(
  Retorno:
    Um número inteiro válido, dentro do intervalo [min, max]. */
 
-int ler_inteiro_seguro(
-    const char *mensagem, // Texto que será exibido ao usuário para solicitar o valor.
-    int min,              // Valor mínimo permitido.
-    int max)              // Valor máximo permitido.
-    {
-    char entrada[100]; // Buffer para armazenar a linha digitada
-    int valor;         // Variável onde será armazenado o número convertido
+int ler_inteiro_seguro(const char *mensagem, int min, int max) {
+    char entrada[100];  // Buffer para armazenar a entrada do usuário
+    int valor;          // Valor convertido da string
 
     while (1) {
-        printf("%s ", mensagem);
-
-        // Lê uma linha completa da entrada padrão (stdin), incluindo o '\n'.
-        // Isso evita que um '\n' residual atrapalhe a leitura.
-
+        // Exibe a mensagem (ex: "Digite sua opcao:")
+        printf("%s\n", mensagem);
+        printf("[   ]\b\b\b"); // Cursor centralizado no colchete
+        
         if (!fgets(entrada, sizeof(entrada), stdin)) {
-            clearerr(stdin); // Limpa erros no buffer, se houver
-            continue;        // Reinicia o loop caso a leitura falhe
-        }
-
-        entrada[strcspn(entrada, "\n")] = '\0'; // Substitui '\n' por '\0' na string
-
-
-        // Usa sscanf para tentar extrair um número inteiro da string.
-        // Se falhar (não for número), emite mensagem e repete o laço.
-
-        if (sscanf(entrada, "%d", &valor) != 1) {
-            printf("Erro: Digite um numero valido!\n");
+            clearerr(stdin); // Limpa erro, se houver
             continue;
         }
 
-        // Verifica se o valor está dentro do intervalo permitido
+        entrada[strcspn(entrada, "\n")] = '\0'; // Remove '\n' da entrada
+
+        if (sscanf(entrada, "%d", &valor) != 1) {
+            printf("\n| ERRO: DIGITE UM NUMERO INTEIRO VALIDO! |\n");
+            printf("| TENTE NOVAMENTE:                        |\n");
+            continue;
+        }
 
         if (valor < min || valor > max) {
-            printf("Erro: Valor deve estar entre %d e %d!\n", min, max);
+            printf("\n| ERRO: VALOR DEVE ESTAR ENTRE %d E %d! |\n", min, max);
+            printf("| TENTE NOVAMENTE:                      |\n");
             continue;
         }
 
         return valor;
     }
 }
+
 
 /* Lê uma resposta simples do usuário no formato "s" (sim) ou "n" (não).
  A leitura é feita com getchar() e seguida da limpeza do buffer.

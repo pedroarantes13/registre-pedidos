@@ -7,9 +7,9 @@
 
 void adicionarItem(Cardapio *item) {
 
-    printf(" __________________________________\n");
-    printf("| DIGITE O NOME DO ITEM:           |\n");
-    printf("| >                                |\r| > ");
+    printf(" _______________________________________\n");
+    printf("| DIGITE O NOME DO ITEM:                |\n");
+    printf("| >                                     |\r| > ");
 
     while (getchar() != '\n' && !feof(stdin)); // limpa o buffer do teclado
 
@@ -18,91 +18,106 @@ void adicionarItem(Cardapio *item) {
 
     // Valida se o nome contém apenas letras e espaços
     while (!validar_nome_item(item->item)) {
-        printf("| NOME INVALIDO! USE APENAS LETRAS E ESPACOS.  |\n");
-        printf("| >                                            |\r| > ");
+        printf("| NOME INVALIDO! APENAS LETRAS/ESPACOS! |\n");
+        printf("| >                                     |\r| > ");
         fgets(item->item, 50, stdin);
         item->item[strcspn(item->item, "\n")] = '\0';
     }
 
-    printf("|----------------------------------|\n");
-    printf("| DIGITE O TIPO: 0 = PRATO         |\n");
-    printf("|                1 = BEBIDA        |\n");
-    printf("|                2 = SOBREMESA     |\n");
-    printf("| >                                |\r| > ");
-    item->tipo = ler_inteiro_seguro("", 0, 2);
+    do
+    {
+        printf("|---------------------------------------|\n");
+        printf("| DIGITE O TIPO: 0 = PRATO              |\n");
+        printf("|                1 = BEBIDA             |\n");
+        printf("|                2 = SOBREMESA          |\n");
+        printf("| >                                     |\r| > ");
+        scanf("%d", &item->tipo);
+
+        while (getchar() != '\n' && !feof(stdin)); // limpa o buffer
+
+    } while (validar_tipo(item->tipo) != 0); // Verifica se o tipo é válido
 
     do {
-        printf("|----------------------------------|\n");
-        printf("| DIGITE O VALOR:                  |\n");
-        printf("| >                                |\r| > ");
+        printf("|---------------------------------------|\n");
+        printf("| DIGITE O VALOR:                       |\n");
+        printf("| >                                     |\r| > ");
         scanf("%f", &item->valor);
         while (getchar() != '\n' && !feof(stdin)); // limpa o buffer
 
     } while (validar_valor(item->valor) != 0); // Verifica se o valor é válido
 
-    while (getchar() != '\n' && !feof(stdin)); // limpa o buffer
 
     // Chamada correta com verificação feita por dentro
     if (adicionar_item(*item) == 0) {
-        printf("| ITEM ADICIONADO COM SUCESSO!     |\n");
+        printf("| ITEM ADICIONADO COM SUCESSO!          |\n");
     } else {
-        printf("| ERRO AO ADICIONAR ITEM!          |\n");
+        printf("| ERRO AO ADICIONAR ITEM!               |\n");
     }
 
-    printf(" _________________________________\n");
+    printf(" _______________________________________\n");
 }
 
 void menu_editar_item(Cardapio *novo_item) {
     int indice;
 
-    // Implementação com ler_inteiro_seguro
+    while (getchar() != '\n' && !feof(stdin)); // Limpa qualquer entrada residual
+
     do {
-        printf(" _______________________________________________\n");
-        printf("| DIGITE O INDICE DO ITEM A SER EDITADO:       |\n");
-        printf("| >                                            |\r| > ");
-        indice = ler_inteiro_seguro("", 1, 1000) - 1; // Ajusta o índice para começar de 0
+        printf(" ________________________________________\n");
+        printf("| DIGITE O INDICE DO ITEM A SER EDITADO: |\n");
+        printf("| >                                      |\r| > ");
+        scanf("%d", &(indice));
+        indice--; // Ajusta o índice para começar de 0
+
     } while (verificar_indice_cardapio(STD_BIN, indice) != 0); // Verifica se o índice é válido
     // Se o índice for inválido, solicita novamente o índice
 
-    printf(" _______________________________________\n");
-    printf("| DIGITE O NOME DO NOVO ITEM:           |\n");
-    printf("| >                                     |\r| > ");
+    printf(" ________________________________________\n");
+    printf("| DIGITE O NOME DO NOVO ITEM:            |\n");
+    printf("| >                                      |\r| > ");
+
+    while (getchar() != '\n' && !feof(stdin)); // limpa o buffer antes de fgets
 
     // Implementação com validar_nome_item
     do {
         fgets(novo_item->item, 50, stdin);
         novo_item->item[strcspn(novo_item->item, "\n")] = '\0'; // remove o '\n'
+
         if (!validar_nome_item(novo_item->item)) {
-            printf("\033[1;31mErro: Nome deve conter apenas letras e espaços!\033[0m\n");
-            printf("| >                                     |\r| > ");
+            printf("| NOME INVALIDO! APENAS LETRAS/ESPACOS!  |\n");
+            printf("| >                                      |\r| > ");
         }
     } while (!validar_nome_item(novo_item->item));
 
-    printf("|----------------------------------|\n");
-    printf("| DIGITE O TIPO: 0 = PRATO         |\n");
-    printf("|                1 = BEBIDA        |\n");
-    printf("|                2 = SOBREMESA     |\n");
-    printf("| >                                |\r| > ");
-    novo_item->tipo = ler_inteiro_seguro("", 0, 2);
+    do
+    {
+        printf("|----------------------------------------\n");
+        printf("| DIGITE O TIPO: 0 = PRATO               |\n");
+        printf("|                1 = BEBIDA              |\n");
+        printf("|                2 = SOBREMESA           |\n");
+        printf("| >                                      |\r| > ");
+        scanf("%d", &novo_item->tipo);
+
+        while (getchar() != '\n' && !feof(stdin)); // limpa o buffer
+
+    } while (validar_tipo(novo_item->tipo) != 0); // Verifica se o tipo é válido
 
     do {
-        printf("|----------------------------------|\n");
-        printf("| DIGITE O VALOR:                  |\n");
-        printf("| >                                |\r| > ");
+        printf("|----------------------------------------|\n");
+        printf("| DIGITE O VALOR:                        |\n");
+        printf("| >                                      |\r| > ");
         scanf("%f", &novo_item->valor);
         while (getchar() != '\n' && !feof(stdin)); // limpa o buffer
 
     } while (validar_valor(novo_item->valor) != 0); // Verifica se o valor é válido
-    
-    while (getchar() != '\n' && !feof(stdin)); // limpa o buffer
 
     if (editar_item_cardapio(STD_BIN, indice, novo_item) == 0) {
-        printf("| ITEM EDITADO COM SUCESSO!       |\n");
+        printf("| ITEM EDITADO COM SUCESSO!              |\n");
     } else {
-        printf("| ERRO AO EDITAR ITEM!            |\n");
+        printf("| ERRO AO EDITAR ITEM!                   |\n");
     }
 
-    printf(" _________________________________\n");
+    printf(" ________________________________________\n");
 }
 
 void menu_excluir_item() {
@@ -163,7 +178,7 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
         if (scanf("%d", &escolha) != 1) {
 
             printf(" __________________\n");
-            printf("| ENTRADA INVÁLIDA!|\n");
+            printf("| ENTRADA INVALIDA!|\n");
             printf("| TENTE NOVAMENTE! |\n");
             printf("|------------------|\n");
 
