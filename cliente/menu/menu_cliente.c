@@ -22,7 +22,6 @@ int menu_cliente() {
     int contador_itens_cardapio = 0; // Contador de itens no cardápio       
 
     if (carregar_cardapio(STD_BIN, &cardapio) != 0) { // Tenta carregar o cardápio do arquivo   
-        printf("Nao foi possivel abrir o cardapio. Caso ainda nao tenha cadastrado itens, acesse menu do proprietario para faze-lo.\n"); // Exibe mensagem de erro se não conseguir abrir o cardápio
        
         if (cardapio != NULL) { // Se o cardápio foi alocado, libera a memória        
             free(cardapio); // Libera a memória alocada para o cardápio

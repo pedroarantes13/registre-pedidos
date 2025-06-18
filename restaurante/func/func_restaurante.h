@@ -38,7 +38,9 @@ int editar_item_cardapio(char *filename, int indice, Cardapio *novo_item);
 int remover_item_cardapio(char *filename, int indice);
 
 // Verifica se um índice é válido para o cardápio
-int verificar_indice_cardapio(char *filename, int indice);
+int verificar_indice_cardapio(char *filenamei, int indice);
+
+int ler_inteiro_positivo(); // Lê um inteiro positivo do usuário
 
 int validar_tipo(int tipo); // Verifica se o tipo é válido (0, 1 ou 2)
 
