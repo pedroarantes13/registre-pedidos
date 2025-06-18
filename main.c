@@ -1,3 +1,5 @@
+/*Arquivo main.c contendo o menu principal, com as chamadas das funções referentes ao menu do cliente e ao menu do restaurante*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -5,7 +7,7 @@
 #include "./cliente/func/funcoes.h"
 
 int main() {
-    int opcao;
+    int opcao; // Escolha do usuário sobre a próxima ação do programa
 
     printf("\n==========================\n");
     printf("   BEM-VINDO AO SISTEMA!   \n");
@@ -23,23 +25,22 @@ int main() {
         printf("|   FINALIZAR SECAO [3]  |\n");
         printf("|........................|\n");
         
-    
-
-        printf("\nDigite sua opcao: ");
-        printf("[ ]\b\b"); 
-        scanf("%d", &opcao);
+        opcao = ler_inteiro_seguro("Digite sua opcao ", 1, 3); // Função de validação de números inteiros (1 a 3)
 
         switch (opcao) {
             case 1:
-                system("cls");
-                menu_cliente();
+                system("clear || cls");
+                menu_cliente(); // Chamada para a função referente ao menu do cliente
+                while (getchar() != '\n' && !feof(stdin)); // Limpa o buffer após retornar do menu
                 break;
             case 2:
-                system("cls");
-                menu_restaurante();
+                system("clear || cls");
+                menu_restaurante(); // Chamada para a função referente ao menu do cliente
+                while (getchar() != '\n' && !feof(stdin)); // Limpa o buffer após retornar do menu
                 break;
             case 3:
-                system("cls");
+                // Após o usuário finalizar, encerra o programa
+                system("clear || cls");
                 printf("\n|------------------------|\n");
                 printf("|    SECAO FINALIZADA    |\n");
                 printf("|........................|\n");
@@ -47,11 +48,8 @@ int main() {
                 printf("|     MUITO OBRIGADO!    |\n");
                 printf("|........................|\n");
                 return 0;
-            default:
-                system("cls");
-                printf("\n|------------------------|\n");
-                printf("|    OPCAO INVALIDA!     |\n");
-                printf("|........................|\n");
+
+                // obs.: default retirado devido à função de validação de números inteiros
         }
     }
 

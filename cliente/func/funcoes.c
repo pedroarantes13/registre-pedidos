@@ -1,3 +1,10 @@
+/*Arquivo com a implementação das funções envolvendo a manipulação de dados dos pedidos do restaurante. Incluindo: 
+    1) Registro dos pedidos da mesa
+    2) Cálculo do total da mesa
+    3) Persistência desses dados no arquivo binário
+    4) Geração do relatório final, com métricas, rankings e total arrecadado
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,20 +27,20 @@ void top_bottom() {
 /* Inicializa um vetor de cupons de desconto com valores fixos.
  Cada cupom possui um código (string) e uma porcentagem de desconto (float).
 
- Parâmetro:
-   cupons → vetor de structs 'cupom_desconto' com espaço para até MAX_CUPONS.
+    Parâmetro:
+    cupons → vetor de structs 'cupom_desconto' com espaço para até MAX_CUPONS.
 
- Essa função deve ser chamada uma única vez no início do programa.*/
+    Essa função deve ser chamada uma única vez no início do programa.*/
 
-void inicializar_cupons(struct cupom_desconto cupons[]) {
-    // Define os códigos e porcentagens de desconto diretamente.
+    void inicializar_cupons(struct cupom_desconto cupons[]) {
+        // Define os códigos e porcentagens de desconto diretamente.
 
-    strcpy(cupons[0].codigo, "paulo"); cupons[0].porcentagem = 0.20f;    // 20%
-    strcpy(cupons[1].codigo, "daniel"); cupons[1].porcentagem = 0.30f;   // 30%
-    strcpy(cupons[2].codigo, "pedro"); cupons[2].porcentagem = 0.40f;    // 40%
-    strcpy(cupons[3].codigo, "lizandro"); cupons[3].porcentagem = 0.50f; // 50%
-    strcpy(cupons[4].codigo, "gean"); cupons[4].porcentagem = 0.60f;     // 60%
-}
+        strcpy(cupons[0].codigo, "paulo"); cupons[0].porcentagem = 0.20f;    // 20%
+        strcpy(cupons[1].codigo, "daniel"); cupons[1].porcentagem = 0.30f;   // 30%
+        strcpy(cupons[2].codigo, "pedro"); cupons[2].porcentagem = 0.40f;    // 40%
+        strcpy(cupons[3].codigo, "lizandro"); cupons[3].porcentagem = 0.50f; // 50%
+        strcpy(cupons[4].codigo, "gean"); cupons[4].porcentagem = 0.60f;     // 60%
+    }
 
 /* Verifica se um cupom de desconto informado pelo usuário é válido.
  Se for, define a porcentagem de desconto correspondente.
@@ -66,46 +73,39 @@ int aplicar_cupom(
  Retorno:
    Um número inteiro válido, dentro do intervalo [min, max]. */
 
-int ler_inteiro_seguro(
-    const char *mensagem, // Texto que será exibido ao usuário para solicitar o valor.
-    int min,              // Valor mínimo permitido.
-    int max)              // Valor máximo permitido.
-    {
-    char entrada[100]; // Buffer para armazenar a linha digitada
-    int valor;         // Variável onde será armazenado o número convertido
+int ler_inteiro_seguro(const char *mensagem, int min, int max) {
+    char entrada[100];  // Buffer para armazenar a entrada do usuário
+    int valor;          // Valor convertido da string
 
     while (1) {
-        printf("%s ", mensagem);
-
-        // Lê uma linha completa da entrada padrão (stdin), incluindo o '\n'.
-        // Isso evita que um '\n' residual atrapalhe a leitura.
-
+        // Exibe a mensagem (ex: "Digite sua opcao:")
+        printf("%s\n", mensagem);
+        printf("[   ]\b\b\b"); // Cursor centralizado no colchete
+        fflush(stdout);
+        
         if (!fgets(entrada, sizeof(entrada), stdin)) {
-            clearerr(stdin); // Limpa erros no buffer, se houver
-            continue;        // Reinicia o loop caso a leitura falhe
-        }
-
-        entrada[strcspn(entrada, "\n")] = '\0'; // Substitui '\n' por '\0' na string
-
-
-        // Usa sscanf para tentar extrair um número inteiro da string.
-        // Se falhar (não for número), emite mensagem e repete o laço.
-
-        if (sscanf(entrada, "%d", &valor) != 1) {
-            printf("\033[1;31mErro: Digite um número válido!\033[0m\n");
+            clearerr(stdin); // Limpa erro, se houver
             continue;
         }
 
-        // Verifica se o valor está dentro do intervalo permitido
+        entrada[strcspn(entrada, "\n")] = '\0'; // Remove '\n' da entrada
+
+        if (sscanf(entrada, "%d", &valor) != 1) {
+            printf("\n| ERRO: DIGITE UM NUMERO INTEIRO VALIDO! |\n");
+            printf("| TENTE NOVAMENTE:                       |\n");
+            continue;
+        }
 
         if (valor < min || valor > max) {
-            printf("\033[1;31mErro: Valor deve estar entre %d e %d!\033[0m\n", min, max);
+            printf("\n| ERRO: VALOR DEVE ESTAR ENTRE %d E %d! |\n", min, max);
+            printf("| TENTE NOVAMENTE:                    |\n");
             continue;
         }
 
         return valor;
     }
 }
+
 
 /* Lê uma resposta simples do usuário no formato "s" (sim) ou "n" (não).
  A leitura é feita com getchar() e seguida da limpeza do buffer.
@@ -132,7 +132,7 @@ int validar_resposta_sn(const char *mensagem) {
         // Se for a resposta for inválida, informa ao usuário e repete o laço
 
         if (resposta != 's' && resposta != 'n') {
-            printf("\033[1;31mOpcao invalida! Digite 's' ou 'n'.\033[0m\n");
+            printf("Opcao invalida! Digite 's' ou 'n'.\n");
         }
 
     } while (resposta != 's' && resposta != 'n');
@@ -173,7 +173,7 @@ Cardapio* buscar_item_cardapio(
     // Verifica se a posição está dentro do intervalo válido do vetor.
 
     if (posicao < 1 || posicao > total_itens) {
-        printf("\033[1;31mErro: Posicao %d invalida no cardapio!\033[0m\n", posicao);
+        printf("Erro: Posicao %d invalida no cardapio!\n", posicao);
         return NULL;
     }
 
