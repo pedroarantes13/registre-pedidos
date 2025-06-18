@@ -1,6 +1,8 @@
 #include "func_restaurante.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 // Função de registrar um item no cardápio
 // Salva um registro do tipo Cardapio ao final do arquivo binário padrão
@@ -55,7 +57,7 @@ int carregar_cardapio(char *filename, Cardapio **cardapio) {
   // Verifica se o arquivo foi aberto corretamente
   if (fptr == NULL) {
 
-    printf("Falha ao tentar abrir cardapio para leitura.\n");
+    printf("Falha ao tentar abrir cardapio para leitura.\nCaso ainda nao tenha cadastrado itens, acesse menu do proprietario para faze-lo.\n");
     return 1;
 
   }
@@ -268,20 +270,30 @@ int remover_item_cardapio(char *filename, int indice) {
 // Função para verificar se um inteiro é um índice do cardápio válido
 // Retorna 0 se o índice for válido, caso contrário retorna 1
 // Recebe o arquivo binário padrão, conta a quantidade de itens e verifica se o índice está dentro do intervalo
+// Verificar se a entrada é um número inteiro positivo
 int verificar_indice_cardapio(char *filename, int indice) {
 
+  // Verifica se o índice é negativo
+  if (indice < 0) {
+    printf("|----------------------------------------|\n");
+    printf("| INDICE INVALIDO! DEVE SER POSITIVO!   |\n");
+    return 1;
+  }
+
   // Conta o total de itens no cardápio
-  int total_itens = total_itens_cardapio(filename);
+  int total = total_itens_cardapio(filename);
 
   // Verifica se o índice está dentro do intervalo válido
-  if (indice < 0 || indice >= total_itens) {
+  if (indice >= total) {
     printf("|----------------------------------------|\n");
-    printf("| INDICE INVALIDO! DEVE SER ENTRE 1 E %d! |\n", total_itens);
+    printf("| INDICE INVALIDO! FORA DO LIMITE!      |\n");
     return 1;
   }
 
   return 0;
+
 }
+
 
 int validar_tipo(int tipo) {
 
@@ -308,3 +320,40 @@ int validar_valor(float valor) {
   return 0;
 }
 
+int ler_inteiro_positivo() {
+  char entrada[50];
+  int valido = 0;
+  int numero;
+  
+  while (getchar() != '\n' && !feof(stdin)); // limpa o buffer
+
+  while (!valido) {
+    printf("Digite um inteiro positivo: ");
+    if (fgets(entrada, sizeof(entrada), stdin) != NULL) {
+      // Remover o '\n' se existir
+      entrada[strcspn(entrada, "\n")] = '\0';
+
+      // Verificar se todos os caracteres são dígitos
+      valido = 1;
+      for (int i = 0; entrada[i] != '\0'; i++) {
+        if (!isdigit(entrada[i])) {
+          valido = 0;
+          break;
+        }
+      }
+
+      if (valido) {
+          numero = atoi(entrada);
+          if (numero <= 0) {
+            printf("Numero invalido. Deve ser maior que zero.\n");
+            valido = 0;
+          }
+      } else {
+        printf("Entrada invalida. Digite apenas numeros inteiros positivos.\n");
+      }
+    }
+  }
+  
+  return numero;
+
+}

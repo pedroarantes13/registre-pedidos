@@ -5,7 +5,7 @@
 #include "../../cliente/func/funcoes.h"
 
 
-void adicionarItem(Cardapio *item) {
+void menu_adicionar_item(Cardapio *item) {
 
     printf(" _______________________________________\n");
     printf("| DIGITE O NOME DO ITEM:                |\n");
@@ -60,13 +60,11 @@ void adicionarItem(Cardapio *item) {
 void menu_editar_item(Cardapio *novo_item) {
     int indice;
 
-    while (getchar() != '\n' && !feof(stdin)); // Limpa qualquer entrada residual
-
     do {
         printf(" ________________________________________\n");
         printf("| DIGITE O INDICE DO ITEM A SER EDITADO: |\n");
         printf("| >                                      |\r| > ");
-        scanf("%d", &(indice));
+        indice = ler_inteiro_positivo(); // Lê um inteiro positivo do usuário
         indice--; // Ajusta o índice para começar de 0
 
     } while (verificar_indice_cardapio(STD_BIN, indice) != 0); // Verifica se o índice é válido
@@ -75,8 +73,6 @@ void menu_editar_item(Cardapio *novo_item) {
     printf(" ________________________________________\n");
     printf("| DIGITE O NOME DO NOVO ITEM:            |\n");
     printf("| >                                      |\r| > ");
-
-    while (getchar() != '\n' && !feof(stdin)); // limpa o buffer antes de fgets
 
     // Implementação com validar_nome_item
     do {
@@ -128,7 +124,7 @@ void menu_excluir_item() {
         printf(" _______________________________________________\n");
         printf("| DIGITE O INDICE DO ITEM A SER EXCLUIDO:      |\n");
         printf("| >                                            |\r| > ");
-        scanf("%d", &indice);
+        indice = ler_inteiro_positivo(); // Lê um inteiro positivo do usuário
         indice--; // Ajusta o índice para começar de 0
 
     } while (verificar_indice_cardapio(STD_BIN, indice) != 0); // Verifica se o índice é válido
@@ -191,7 +187,7 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
 
             case 1:
                 
-                system("cls"); // Limpa o terminal
+                system("clear || cls"); // Limpa o terminal
 
                 imprimir_cardapio(STD_BIN); //Chamo a funcao do Pedro, para mostrar o cardapio
 
@@ -199,20 +195,22 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
 
             case 2:{
 
-                system("cls");
+                system("clear || cls");
 
                 Cardapio item;
 
-                adicionarItem(&item); //Adiciona um item no cardapio
+                menu_adicionar_item(&item); //Adiciona um item no cardapio
 
                 break;
             }
                 
             case 3:{
 
-                system("cls");
+                system("clear || cls");
 
                 Cardapio novo_item;
+
+                imprimir_cardapio(STD_BIN); //Mostra o cardapio para o usuario
 
                 menu_editar_item(&novo_item); //Modifica um item do cardapio
 
@@ -221,7 +219,9 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
 
             case 4:{
 
-                system("cls");
+                system("clear || cls");
+
+                imprimir_cardapio(STD_BIN); //Mostra o cardapio para o usuario
 
                 menu_excluir_item(); //Remove um item do cardapio
 
@@ -232,7 +232,7 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
 
             case 5:
 
-                system("cls");
+                system("clear || cls");
 
                 gerar_relatorio_final(); // Chamo a funcao do Daniel, onde vai gerar o relatorio
 
@@ -240,7 +240,7 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
 
             case 0:
 
-                system("cls");
+                system("clear || cls");
 
                 printf("  =================================\n");
                 printf("  ==SECAO FINALIZADA COM SUCESSO!==\n"); //Finaliza a secao
@@ -250,7 +250,7 @@ int menu_restaurante(){ //Funcao inicial do menu restaurante
 
             default:
 
-                system("cls");
+                system("clear || cls");
 
                 printf("\n  [COMANDO INVALIDO!]\n   [TENTE NOVAMENTE]\n"); //Entra em loop ate que se digite um comando valido
         }
